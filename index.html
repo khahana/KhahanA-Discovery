@@ -1,0 +1,3051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="KhahanA Discovery">
+    <meta name="theme-color" content="#667eea">
+    <meta name="description" content="Real-time cryptocurrency signal discovery and trading tracker">
+    <meta name="version" content="2.0.0">
+    
+    <!-- App Icons for iOS -->
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icon-152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="icon-167.png">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="icon-192.png">
+    
+    <title>🔍 KhahanA Discovery v2.0</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding-bottom: 80px;
+            overflow-x: hidden;
+        }
+        
+        .header {
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .app-title {
+            font-size: 1.5em;
+            font-weight: 900;
+        }
+        
+        .badge {
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9em;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 10px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            background: white;
+            color: #667eea;
+        }
+        
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .filter-btn.active {
+            background: rgba(255,255,255,0.9);
+            color: #667eea;
+            border-color: white;
+        }
+        
+        .container {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .discovery-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            position: relative;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .discovery-card.long {
+            border-left: 6px solid #10b981;
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+        }
+        
+        .discovery-card.short {
+            border-left: 6px solid #ef4444;
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+        }
+        
+        .discovery-card.active-position {
+            border: 3px solid #6366f1;
+            background: linear-gradient(135deg, #ddd6fe 0%, #c4b5fd 100%);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .symbol {
+            font-size: 1.8em;
+            font-weight: 900;
+            color: #1f2937;
+        }
+        
+        .timing {
+            font-size: 0.9em;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.6);
+            color: #1f2937;
+            margin-top: 5px;
+        }
+        
+        .timing.excellent {
+            background: #fbbf24;
+            color: #78350f;
+            animation: glow 2s infinite;
+        }
+        
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 5px #fbbf24; }
+            50% { box-shadow: 0 0 20px #fbbf24; }
+        }
+        
+        .status-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #6366f1;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 700;
+            animation: pulse 2s infinite;
+        }
+        
+        .dismiss-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0,0,0,0.1);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 1.2em;
+            cursor: pointer;
+            color: #6b7280;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .dismiss-btn:active {
+            background: rgba(239,68,68,0.2);
+            color: #ef4444;
+            transform: scale(0.95);
+        }
+        
+        .prices {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .price-box {
+            background: rgba(255,255,255,0.6);
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .price-box.tp {
+            background: rgba(16,185,129,0.15);
+        }
+        
+        .price-box.sl {
+            background: rgba(239,68,68,0.15);
+        }
+        
+        .price-box.current {
+            background: rgba(99,102,241,0.15);
+        }
+        
+        .price-label {
+            font-size: 0.7em;
+            color: #6b7280;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .price-value {
+            font-size: 1.1em;
+            font-weight: 900;
+            color: #1f2937;
+        }
+        
+        .price-percent {
+            font-size: 0.75em;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+        
+        .pnl-display {
+            background: rgba(255,255,255,0.8);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        
+        .pnl-label {
+            font-size: 0.8em;
+            color: #6b7280;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .pnl-value {
+            font-size: 2em;
+            font-weight: 900;
+        }
+        
+        .pnl-value.profit {
+            color: #10b981;
+        }
+        
+        .pnl-value.loss {
+            color: #ef4444;
+        }
+        
+        .pnl-percent {
+            font-size: 0.9em;
+            margin-top: 5px;
+            font-weight: 700;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin: 12px 0;
+            font-size: 0.85em;
+            color: #6b7280;
+        }
+        
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .stat strong {
+            color: #1f2937;
+        }
+        
+        .reason {
+            font-size: 0.8em;
+            color: #6b7280;
+            font-style: italic;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
+        
+        .action-btns {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        
+        .btn-take-position {
+            background: #6366f1;
+            color: white;
+            font-size: 1.1em;
+        }
+        
+        .btn-take-position:active {
+            transform: scale(0.98);
+            background: #4f46e5;
+        }
+        
+        .btn-close {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .btn-close:active {
+            transform: scale(0.98);
+            background: #dc2626;
+        }
+        
+        .btn-chart {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-chart:active {
+            transform: scale(0.98);
+            background: #059669;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+        }
+        
+        .empty-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+        
+        .empty-text {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .empty-subtext {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px 20px;
+            color: white;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .journal-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .journal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .journal-symbol {
+            font-size: 1.5em;
+            font-weight: 900;
+            color: #1f2937;
+        }
+        
+        .journal-result {
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1em;
+        }
+        
+        .journal-result.win {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .journal-result.loss {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .journal-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .journal-stat {
+            background: #f9fafb;
+            padding: 12px;
+            border-radius: 10px;
+        }
+        
+        .journal-stat-label {
+            font-size: 0.75em;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+        
+        .journal-stat-value {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #1f2937;
+        }
+        
+        .journal-time {
+            font-size: 0.8em;
+            color: #9ca3af;
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        .summary-box {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .summary-stat {
+            text-align: center;
+        }
+        
+        .summary-value {
+            font-size: 2em;
+            font-weight: 900;
+            color: #1f2937;
+        }
+        
+        .summary-value.profit {
+            color: #10b981;
+        }
+        
+        .summary-value.loss {
+            color: #ef4444;
+        }
+        
+        .summary-label {
+            font-size: 0.9em;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+        
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 12px 20px;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 10px;
+        }
+        
+        .bottom-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.95em;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        
+        .btn-scan {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-scan:active {
+            transform: scale(0.98);
+            background: #5568d3;
+        }
+        
+        .btn-settings {
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+        
+        .btn-settings:active {
+            transform: scale(0.98);
+            background: #e5e7eb;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlideUp 0.3s ease-out;
+        }
+        
+        @keyframes modalSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 1.5em;
+            font-weight: 900;
+            color: #1f2937;
+        }
+        
+        .modal-close {
+            background: #f3f4f6;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 1.2em;
+            cursor: pointer;
+            color: #6b7280;
+        }
+        
+        .setting-item {
+            margin-bottom: 20px;
+        }
+        
+        .setting-label {
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .setting-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1em;
+        }
+        
+        .checkbox-setting {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background: #f9fafb;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        
+        .checkbox-setting input {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+        }
+        
+        .asset-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 15px 0;
+        }
+        
+        .asset-list-item {
+            padding: 14px;
+            background: #f9fafb;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .asset-list-item.custom {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .asset-name {
+            font-weight: 700;
+            color: #1f2937;
+            font-size: 1.05em;
+        }
+        
+        .asset-badge {
+            background: #e5e7eb;
+            color: #6b7280;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .asset-badge.custom {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .asset-item {
+            padding: 12px;
+            background: #f9fafb;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .delete-asset {
+            background: #fee2e2;
+            color: #ef4444;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .scan-status {
+            text-align: center;
+            padding: 12px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 12px;
+            color: white;
+            margin-top: 10px;
+            font-size: 0.85em;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-top">
+            <div class="app-title">🔍 KhahanA Discovery</div>
+            <div class="badge" id="discoveryCount">0</div>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('discoveries')">
+                🔔 Discoveries
+            </button>
+            <button class="tab" onclick="switchTab('positions')">
+                📊 Positions (<span id="positionCount">0</span>)
+            </button>
+            <button class="tab" onclick="switchTab('assets')">
+                📋 Assets (<span id="assetCount">0</span>)
+            </button>
+            <button class="tab" onclick="switchTab('journal')">
+                📖 Journal
+            </button>
+        </div>
+        
+        <div class="filter-bar" id="filterBar">
+            <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">
+                🎯 All
+            </button>
+            <button class="filter-btn" data-filter="excellent" onclick="setFilter('excellent')">
+                ✨ Excellent
+            </button>
+            <button class="filter-btn" data-filter="long" onclick="setFilter('long')">
+                🚀 Long
+            </button>
+            <button class="filter-btn" data-filter="short" onclick="setFilter('short')">
+                📉 Short
+            </button>
+        </div>
+        
+        <div class="scan-status" id="scanStatus">
+            Ready to scan...
+        </div>
+    </div>
+    
+    <!-- Discoveries Tab -->
+    <div class="container tab-content active" id="discoveriesTab">
+        <div class="loading">
+            <div class="spinner"></div>
+            <div>Tap "Scan Now" to discover signals...</div>
+        </div>
+    </div>
+    
+    <!-- Positions Tab -->
+    <div class="container tab-content" id="positionsTab">
+        <div class="empty-state">
+            <div class="empty-icon">📊</div>
+            <div class="empty-text">No Active Positions</div>
+            <div class="empty-subtext">Take a position from discoveries to see it here</div>
+        </div>
+    </div>
+    
+    <!-- Assets Tab -->
+    <div class="container tab-content" id="assetsTab">
+        <div style="background: white; border-radius: 16px; padding: 20px; margin-bottom: 20px;">
+            <h3 style="margin-bottom: 15px; color: #1f2937; font-size: 1.2em;">➕ Add Custom Asset</h3>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="customAssetInput" placeholder="e.g., BTCUSDT" 
+                    style="flex: 1; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 1em; text-transform: uppercase;">
+                <button class="btn btn-take-position" onclick="addAssetFromTab()" style="white-space: nowrap; padding: 12px 20px;">
+                    Add
+                </button>
+            </div>
+        </div>
+        
+        <div style="background: white; border-radius: 16px; padding: 20px;">
+            <h3 style="margin-bottom: 15px; color: #1f2937; font-size: 1.2em;">📋 All Assets</h3>
+            <div style="margin-bottom: 15px; display: flex; gap: 10px;">
+                <button class="filter-btn" style="flex: 1; background: #667eea; color: white; border: none;" onclick="filterAssets('all')">
+                    All (<span id="allCount">0</span>)
+                </button>
+                <button class="filter-btn" style="flex: 1;" onclick="filterAssets('default')">
+                    Default (<span id="defaultCount">0</span>)
+                </button>
+                <button class="filter-btn" style="flex: 1;" onclick="filterAssets('custom')">
+                    Custom (<span id="customCountTab">0</span>)
+                </button>
+            </div>
+            <div id="assetsList" style="max-height: 60vh; overflow-y: auto;"></div>
+        </div>
+    </div>
+    
+    <!-- Journal Tab -->
+    <div class="container tab-content" id="journalTab">
+        <div class="summary-box" id="journalSummary">
+            <div class="summary-stats">
+                <div class="summary-stat">
+                    <div class="summary-value" id="totalTrades">0</div>
+                    <div class="summary-label">Total Trades</div>
+                </div>
+                <div class="summary-stat">
+                    <div class="summary-value" id="winRate">0%</div>
+                    <div class="summary-label">Win Rate</div>
+                </div>
+                <div class="summary-stat">
+                    <div class="summary-value profit" id="totalProfit">$0</div>
+                    <div class="summary-label">Total P&L</div>
+                </div>
+                <div class="summary-stat">
+                    <div class="summary-value" id="avgPnl">$0</div>
+                    <div class="summary-label">Avg P&L</div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="journalList">
+            <div class="empty-state">
+                <div class="empty-icon">📖</div>
+                <div class="empty-text">No Trade History</div>
+                <div class="empty-subtext">Closed positions will appear here</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bottom Action Bar -->
+    <div class="bottom-bar">
+        <button class="bottom-btn btn-scan" onclick="startScan()">
+            🔄 Scan Now
+        </button>
+        <button class="bottom-btn btn-settings" onclick="openSettings()">
+            ⚙️ Settings
+        </button>
+    </div>
+    
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">⚙️ Settings</div>
+                <button class="modal-close" onclick="closeSettings()">✕</button>
+            </div>
+            
+            <div class="setting-item">
+                <label class="checkbox-setting">
+                    <input type="checkbox" id="autoScanEnabled" checked onchange="saveSettings()">
+                    <span><strong>🔄 Auto-scan enabled</strong></span>
+                </label>
+            </div>
+            
+            <div class="setting-item">
+                <label class="setting-label">⏱️ Auto-scan Interval</label>
+                <select class="setting-input" id="scanInterval" onchange="saveSettings()">
+                    <option value="60">Every 1 minute ⚡</option>
+                    <option value="180">Every 3 minutes</option>
+                    <option value="300" selected>Every 5 minutes ⏱️</option>
+                    <option value="600">Every 10 minutes</option>
+                </select>
+            </div>
+            
+            <div class="setting-item">
+                <label class="checkbox-setting">
+                    <input type="checkbox" id="soundEnabled" checked onchange="saveSettings()">
+                    <span><strong>🔊 Sound Alerts</strong></span>
+                </label>
+            </div>
+            
+            <div class="setting-item">
+                <label class="checkbox-setting">
+                    <input type="checkbox" id="voiceEnabled" checked onchange="saveSettings()">
+                    <span><strong>🎤 Voice Announcement</strong></span>
+                </label>
+            </div>
+            
+            <div class="setting-item">
+                <label class="setting-label">📈 Signal Quality</label>
+                <select class="setting-input" id="qualityMode" onchange="saveSettings()">
+                    <option value="conservative">🛡️ Conservative</option>
+                    <option value="balanced" selected>⚖️ Balanced</option>
+                    <option value="aggressive">⚡ Aggressive</option>
+                </select>
+            </div>
+            
+            <div class="setting-item">
+                <label class="setting-label">💰 Position Size ($)</label>
+                <input type="number" class="setting-input" id="positionSize" value="1000" min="10" step="10" onchange="saveSettings()">
+            </div>
+            
+            <div class="setting-item">
+                <button class="btn btn-close" onclick="clearAllData()" style="width: 100%;">
+                    🗑️ Clear All Data
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+
+        // ===================================================================
+        // SETTINGS & THRESHOLDS (FROM MAIN HTML)
+        // ===================================================================
+        
+        const TIMEFRAMES = ['15m', '1h', '4h', '1d', '1w'];
+        
+        function getQualityThresholds() {
+            return {
+                'conservative': {
+                    score: currentSettings.conservativeScore / 100,
+                    psarGate: currentSettings.conservativePSAR
+                },
+                'balanced': {
+                    score: currentSettings.moderateScore / 100,
+                    psarGate: currentSettings.moderatePSAR
+                },
+                'aggressive': {
+                    score: currentSettings.aggressiveScore / 100,
+                    psarGate: currentSettings.aggressivePSAR
+                }
+            };
+        }
+        
+        function getExitStrategies() {
+            return {
+                standard: { 
+                    tpFixed: currentSettings.standardTP, 
+                    slFixed: currentSettings.standardSL, 
+                    useATR: false 
+                },
+                conservative: { 
+                    atrMult: currentSettings.conservativeATR, 
+                    slFixed: currentSettings.atrSL, 
+                    useATR: true 
+                },
+                moderate: { 
+                    atrMult: currentSettings.moderateATR, 
+                    slFixed: currentSettings.atrSL, 
+                    useATR: true 
+                },
+                aggressive: { 
+                    atrMult: currentSettings.aggressiveATR, 
+                    slFixed: currentSettings.atrSL, 
+                    useATR: true 
+                }
+            };
+        }
+        
+        const DEFAULT_SETTINGS = {
+            timeframes: ['15m', '1h', '4h', '1d', '1w'],
+            standardTP: 1.5,
+            standardSL: 1.0,
+            conservativeATR: 1.0,
+            moderateATR: 1.5,
+            aggressiveATR: 2.5,
+            atrSL: 1.0,
+            conservativeScore: 60,
+            conservativePSAR: 7,
+            moderateScore: 50,
+            moderatePSAR: 5,
+            aggressiveScore: 40,
+            aggressivePSAR: 3,
+            spineEMA1: 50,
+            spineEMA2: 70,
+            spineEMA3: 100,
+            rsiPeriod14: 14,
+            rsiPeriod7: 7,
+            rsiOverbought: 70,
+            rsiOversold: 30,
+            atrPeriod: 14,
+            psarStep: 0.02,
+            psarMax: 0.2,
+            longNowOffset: 0.1,
+            longPullbackMin: 1.5,
+            longPullbackMax: 2.5,
+            longConsolidation: 1.25,
+            shortNowOffset: 0.1,
+            shortRallyMin: 1.5,
+            shortRallyMax: 2.5,
+            shortConsolidation: 1.25,
+            candlesLimit: 200,
+            cacheDuration: 30,
+            autoRefreshInterval: 30
+        };
+        
+        let currentSettings = {...DEFAULT_SETTINGS};
+        
+        // Data cache for API calls
+        const dataCache = {};
+
+        // Forex support constants
+        const KHAHANA_SERVER = 'https://khahana-server.onrender.com';
+        const FOREX_ASSETS = ['XAUUSD', 'DAX40'];
+        
+        function isForexAsset(symbol) {
+            return FOREX_ASSETS.some(forex => symbol.toUpperCase().includes(forex));
+        }
+        
+        // Simplified - no forex support in mobile (crypto only)
+        async function fetchKhahanAData(symbol, timeframe = '1h') {
+            console.log(`ℹ️ ${symbol} is forex - using Binance data only`);
+            return null;
+        }
+        
+        async function fetchSingleLampsData(symbol) {
+            // Not needed for mobile - return null
+            return null;
+        }
+        
+        const CACHE_DURATION = 30000; // 30 seconds
+        
+        // ===================================================================
+        // DEFAULT ASSETS - Top 200 Binance USDT Pairs
+        // ===================================================================
+        
+        const DEFAULT_ASSETS = [
+            'BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'SOLUSDT', 'XRPUSDT',
+            'ADAUSDT', 'DOGEUSDT', 'AVAXUSDT', 'TRXUSDT', 'LINKUSDT',
+            'DOTUSDT', 'MATICUSDT', 'SHIBUSDT', 'LTCUSDT', 'UNIUSDT',
+            'ATOMUSDT', 'ETCUSDT', 'XLMUSDT', 'NEARUSDT', 'ALGOUSDT',
+            'APTUSDT', 'ARBUSDT', 'OPUSDT', 'LDOUSDT', 'SUIUSDT',
+            'INJUSDT', 'FILUSDT', 'IMXUSDT', 'ICPUSDT', 'VETUSDT',
+            'HBARUSDT', 'AAVEUSDT', 'MKRUSDT', 'GRTUSDT', 'SANDUSDT',
+            'MANAUSDT', 'AXSUSDT', 'THETAUSDT', 'FTMUSDT', 'EGLDUSDT',
+            'EOSUSDT', 'XTZUSDT', 'KSMUSDT', 'ARUSDT', 'FLOWUSDT',
+            'CHZUSDT', 'RUNEUSDT', 'WAVESUSDT', 'XMRUSDT', 'ZECUSDT',
+            'COMPUSDT', 'CRVUSDT', 'YFIUSDT', 'SNXUSDT', 'UMAUSDT',
+            'BALUSDT', 'LRCUSDT', 'ENJUSDT', 'SUSHIUSDT', 'ZRXUSDT',
+            'RENUSDT', 'KNCUSDT', 'BANDUSDT', 'STORJUSDT', 'CTKUSDT',
+            'ANKRUSDT', 'OCEANUSDT', 'QTUMUSDT', 'ZILUSDT', 'ICXUSDT',
+            'ONTUSDT', 'IOTAUSDT', 'OMGUSDT', 'BATUSDT', 'CELRUSDT',
+            'KAVAUSDT', 'RVNUSDT', 'CVCUSDT', 'NEOUSDT', 'IOSTUSDT',
+            'DASHUSDT', 'NANOUSDT', 'ONEUSDT', 'DGBUSDT', 'BTSUSDT',
+            'SCUSDT', 'LSKUSDT', 'ZENUSDT', 'STMXUSDT', 'KMDUSDT',
+            'BNXUSDT', 'STXUSDT', 'RSRUSDT', 'AUDIOUSDT', 'COTIUSDT',
+            'SKLUSDT', 'LINAUSDT', 'REEFUSDT', 'OGUSDT', 'POLYUSDT',
+            'GALAUSDT', 'APEUSDT', 'GMTUSDT', 'GALUSDT', 'JASMYUSDT',
+            'LOOMUSDT', 'MAGICUSDT', 'ILVUSDT', 'TLMUSDT',
+            'SFPUSDT', 'C98USDT', 'PERPUSDT',
+            'RAREUSDT', 'DUSKUSDT', 'GLMUSDT', 'VOXELUSDT', 'STARUSDT',
+            'NMRUSDT', 'RDNTUSDT', 'CTSIUSDT', 'HIGHUSDT', 'CVXUSDT',
+            'AGLDUSDT', 'FIDAUSDT', 'BLURUSDT', 'BICOUSDT', 'ASTRUSDT',
+            'RENDERUSDT', 'FETUSDT', 'AGIXUSDT', 'OCEUSDT', 'PHBUSDT',
+            'ARKMUSDT', 'IQUSDT', 'NTRNUSDT', 'TIAUSDT', 'ARKUSDT',
+            'AIUSDT', 'WLDUSDT', 'PYTHUSDT', 'JTOUSDT', 'ACEUSDT',
+            'NFPUSDT', 'ALTUSDT', 'XAIUSDT', 'MANTAUSDT', 'ONDOUSDT',
+            'DYMUSDT', 'PIXELUSDT', 'PORTALUSDT', 'PDAUSDT', 'AEVOUSDT',
+            'ENAUSDT', 'BBUSDT', 'NOTUSDT', 'IOUSDT',
+            'PEPEUSDT', 'FLOKIUSDT', 'BONKUSDT', 'WIFUSDT', '1000SATSUSDT',
+            'RATUSDT', 'ORDIUSDT', 'TURBOUSDT', 'NEIROUSDT',
+            'POPCATUSDT', 'MEMEUSDT', 'MEWUSDT', 'MOGUSDT',
+            'BOMEUSDT', 'DOGSUSDT', 'HMSTRUSDT',
+            'SCRUSDT', 'EIGENUSDT', 'BANUSDT', 'ACTUSDT', 'PNUTUSDT',
+            'GOATUSDT', 'MOVEUSDT', 'MEUSDT', 'VANAUSDT', 'POLUSDT',
+            'SEIUSDT', 'JUPUSDT', 'STRKUSDT', 'PENDLEUSDT',
+            'TNSRUSDT', 'SAGAUSDT', 'TAOUSDT', 'OMNIUSDT'
+        ];
+        
+        // ===================================================================
+        // STATE MANAGEMENT
+        // ===================================================================
+        
+        let discoveries = [];
+        let activePositions = JSON.parse(localStorage.getItem('kh_activePositions') || '[]');
+        let journal = JSON.parse(localStorage.getItem('kh_journal') || '[]');
+        let customAssets = JSON.parse(localStorage.getItem('kh_customAssets') || '[]');
+        
+        // Safety check: Ensure activePositions is always an array
+        if (!Array.isArray(activePositions)) {
+            console.warn('⚠️ activePositions was not an array, resetting...');
+            activePositions = [];
+            localStorage.setItem('kh_activePositions', '[]');
+        }
+        
+        // Safety check: Ensure journal is always an array
+        if (!Array.isArray(journal)) {
+            console.warn('⚠️ journal was not an array, resetting...');
+            journal = [];
+            localStorage.setItem('kh_journal', '[]');
+        }
+        
+        // Safety check: Ensure customAssets is always an array
+        if (!Array.isArray(customAssets)) {
+            console.warn('⚠️ customAssets was not an array, resetting...');
+            customAssets = [];
+            localStorage.setItem('kh_customAssets', '[]');
+        }
+        let currentFilter = 'all';
+        let currentTab = 'discoveries';
+        let settings = {
+            autoScan: true,
+            scanInterval: 300, // Default 5 minutes (300 seconds)
+            sound: true,
+            voice: true,
+            quality: 'balanced',
+            positionSize: 1000
+        };
+        let scanInterval = null;
+        let priceUpdateInterval = null;
+        let isScanning = false;
+        let currentAssetFilter = 'all';
+        
+        // Load settings
+        const savedSettings = localStorage.getItem('kh_discoverySettings');
+        if (savedSettings) {
+            settings = {...settings, ...JSON.parse(savedSettings)};
+            document.getElementById('positionSize').value = settings.positionSize;
+            document.getElementById('qualityMode').value = settings.quality;
+            document.getElementById('autoScanEnabled').checked = settings.autoScan;
+            document.getElementById('soundEnabled').checked = settings.sound;
+            document.getElementById('voiceEnabled').checked = settings.voice;
+            document.getElementById('scanInterval').value = settings.scanInterval;
+        }
+        
+        // ===================================================================
+        // BINANCE API
+        // ===================================================================
+        
+        // ===================================================================
+        // BINANCE WEBSOCKET - No CORS issues!
+        // ===================================================================
+        
+        const klineCache = new Map(); // Cache for candle data
+        const priceCache = new Map(); // Cache for current prices
+        
+        // Fetch initial historical data using public Binance API (works in browser)
+        async function fetchBinanceData(symbol, interval = '1h', limit = 100) {
+            try {
+                // Direct API call - Binance allows this endpoint without CORS
+                const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`;
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (!Array.isArray(data)) {
+                    throw new Error('Invalid data');
+                }
+                
+                const candles = data.map(candle => ({
+                    time: candle[0],
+                    open: parseFloat(candle[1]),
+                    high: parseFloat(candle[2]),
+                    low: parseFloat(candle[3]),
+                    close: parseFloat(candle[4]),
+                    volume: parseFloat(candle[5])
+                }));
+                
+                // Cache the data
+                klineCache.set(symbol, candles);
+                
+                return candles;
+            } catch (err) {
+                console.error(`❌ ${symbol}: ${err.message}`);
+                
+                // Try cached data if available
+                if (klineCache.has(symbol)) {
+                    console.log(`📦 Using cached data for ${symbol}`);
+                    return klineCache.get(symbol);
+                }
+                
+                return null;
+            }
+        }
+        
+        // Get current price from cache or WebSocket
+        async function getCurrentPrice(symbol) {
+            try {
+                // Try cache first
+                if (priceCache.has(symbol)) {
+                    return priceCache.get(symbol);
+                }
+                
+                // Fallback: Get from ticker
+                const url = `https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`;
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                const price = parseFloat(data.price);
+                priceCache.set(symbol, price);
+                return price;
+            } catch (err) {
+                console.error(`❌ ${symbol} price: ${err.message}`);
+                return null;
+            }
+        }
+        
+        // Subscribe to price updates via WebSocket for active positions
+        function subscribeToPriceUpdates(symbols) {
+            if (!symbols || symbols.length === 0) return;
+            
+            const streams = symbols.map(s => `${s.toLowerCase()}@ticker`).join('/');
+            const wsUrl = `wss://stream.binance.com:9443/stream?streams=${streams}`;
+            
+            const ws = new WebSocket(wsUrl);
+            
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.data && data.data.s && data.data.c) {
+                    const symbol = data.data.s;
+                    const price = parseFloat(data.data.c);
+                    priceCache.set(symbol, price);
+                    
+                    // Update active positions with new price
+                    activePositions.forEach(pos => {
+                        if (pos.symbol === symbol) {
+                            pos.currentPrice = price;
+                        }
+                    });
+                }
+            };
+            
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+            };
+            
+            return ws;
+        }
+        
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        
+        // ===================================================================
+        // TECHNICAL INDICATORS
+        // ===================================================================
+        
+        function calculateRSI(data, period = 14) {
+            if (data.length < period + 1) return Array(data.length).fill(50);
+            
+            const rsi = [];
+            let gains = 0, losses = 0;
+            
+            for (let i = 1; i <= period; i++) {
+                const change = data[i].close - data[i-1].close;
+                if (change > 0) gains += change;
+                else losses += Math.abs(change);
+            }
+            
+            let avgGain = gains / period;
+            let avgLoss = losses / period;
+            
+            for (let i = 0; i < period; i++) rsi.push(50);
+            
+            for (let i = period; i < data.length; i++) {
+                const change = data[i].close - data[i-1].close;
+                const gain = change > 0 ? change : 0;
+                const loss = change < 0 ? Math.abs(change) : 0;
+                
+                avgGain = (avgGain * (period - 1) + gain) / period;
+                avgLoss = (avgLoss * (period - 1) + loss) / period;
+                
+                const rs = avgLoss === 0 ? 100 : avgGain / avgLoss;
+                rsi.push(100 - (100 / (1 + rs)));
+            }
+            
+            return rsi;
+        }
+        
+        function calculateEMA(data, period) {
+            const ema = [];
+            const multiplier = 2 / (period + 1);
+            
+            let sum = 0;
+            for (let i = 0; i < Math.min(period, data.length); i++) {
+                sum += data[i].close;
+            }
+            const sma = sum / Math.min(period, data.length);
+            
+            ema.push(sma);
+            
+            for (let i = 1; i < data.length; i++) {
+                const value = (data[i].close - ema[i-1]) * multiplier + ema[i-1];
+                ema.push(value);
+            }
+            
+            return ema;
+        }
+        
+        // ===================================================================
+        // SIGNAL GENERATION
+        // ===================================================================
+        
+        
+// ========================================
+// EXACT MAIN HTML SIGNAL LOGIC (100%)
+// ========================================
+
+async function fetchBinanceData(symbol, timeframe, limit = 200, forceRefresh = false) {
+            // Check if this is a forex asset that should use KhahanA server
+            if (isForexAsset(symbol)) {
+                console.log(`🌍 ${symbol} is forex - using KhahanA server`);
+                return await fetchKhahanAData(symbol, timeframe); // Pass timeframe
+            }
+            
+            // For crypto assets, use Binance API
+            // Check cache first (unless forceRefresh is true)
+            const cacheKey = `${symbol}_${timeframe}`;
+            const now = Date.now();
+            
+            if (!forceRefresh && dataCache[cacheKey] && (now - dataCache[cacheKey].timestamp) < (currentSettings.cacheDuration * 1000)) {
+                console.log(`📦 Cache hit: ${symbol} ${timeframe}`);
+                return dataCache[cacheKey].data;
+            }
+            
+            const intervals = {
+                '1m': '1m', '5m': '5m', '10m': '10m', '15m': '15m', '30m': '30m', '45m': '45m',
+                '1h': '1h', '4h': '4h', '12h': '12h', '1d': '1d', '1w': '1w'
+            };
+            
+            const interval = intervals[timeframe] || '1h';
+            const url = `https://fapi.binance.com/fapi/v1/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`;
+            
+            console.log(`📡 Fetching: ${symbol} ${interval} from Binance`);
+            
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    console.log(`⚠️ ${symbol} fetch failed: HTTP ${response.status}`);
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const rawData = await response.json();
+                
+                if (!rawData || rawData.length === 0) {
+                    console.log(`⚠️ No data available for ${symbol}`);
+                    return null;
+                }
+                
+                const data = rawData.map(candle => ({
+                    time: candle[0],
+                    open: parseFloat(candle[1]),
+                    high: parseFloat(candle[2]),
+                    low: parseFloat(candle[3]),
+                    close: parseFloat(candle[4]),
+                    volume: parseFloat(candle[5])
+                }));
+                
+                console.log(`✅ Got ${data.length} candles`);
+                
+                // Cache the data
+                dataCache[cacheKey] = { data, timestamp: now };
+                
+                return data;
+            } catch (error) {
+                console.log(`⚠️ ${symbol} unavailable: ${error.message}`);
+                return null;
+            }
+        }
+        
+        // ==========================================
+        // FUNDING RATE, BID/ASK, ORDERBOOK
+        // ==========================================
+        
+        // Cache for market microstructure data (5 minute cache)
+        let marketDataCache = {};
+        const MARKET_DATA_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+        
+        async function fetchFundingRate(symbol) {
+            try {
+                const url = `https://fapi.binance.com/fapi/v1/premiumIndex?symbol=${symbol}`;
+                const response = await fetch(url);
+                if (!response.ok) {
+                    console.warn(`⚠️ Funding rate API returned ${response.status} for ${symbol}`);
+                    return null;
+                }
+                const data = await response.json();
+                return parseFloat(data.lastFundingRate) * 100; // Convert to percentage
+            } catch (error) {
+                console.error(`Error fetching funding rate for ${symbol}:`, error);
+                return null;
+            }
+        }
+        
+        async function fetchBidAsk(symbol) {
+            try {
+                const url = `https://fapi.binance.com/fapi/v1/depth?symbol=${symbol}&limit=20`;
+                const response = await fetch(url);
+                if (!response.ok) {
+                    console.warn(`⚠️ Orderbook API returned ${response.status} for ${symbol}`);
+                    return null;
+                }
+                const data = await response.json();
+                
+                // Count significant walls (orders with large volume at each level)
+                // A "wall" is an order with volume significantly above average
+                const bidVolumes = data.bids.map(b => parseFloat(b[1]));
+                const askVolumes = data.asks.map(a => parseFloat(a[1]));
+                
+                const avgBidVol = bidVolumes.reduce((a,b) => a+b, 0) / bidVolumes.length;
+                const avgAskVol = askVolumes.reduce((a,b) => a+b, 0) / askVolumes.length;
+                
+                // Count "walls" as orders that are at least 2x average volume
+                const bidWalls = bidVolumes.filter(v => v >= avgBidVol * 2).length;
+                const askWalls = askVolumes.filter(v => v >= avgAskVol * 2).length;
+                
+                return {
+                    bidWalls: bidWalls,
+                    askWalls: askWalls,
+                    totalBidVolume: bidVolumes.reduce((a,b) => a+b, 0),
+                    totalAskVolume: askVolumes.reduce((a,b) => a+b, 0)
+                };
+            } catch (error) {
+                console.error(`Error fetching bid/ask for ${symbol}:`, error);
+                return null;
+            }
+        }
+        
+        async function fetchOrderbookImbalance(symbol) {
+            try {
+                const url = `https://fapi.binance.com/fapi/v1/depth?symbol=${symbol}&limit=20`;
+                const response = await fetch(url);
+                if (!response.ok) {
+                    console.warn(`⚠️ Orderbook API returned ${response.status} for ${symbol}`);
+                    return null;
+                }
+                const data = await response.json();
+                
+                // Calculate total bid and ask volumes
+                const totalBids = data.bids.reduce((sum, bid) => sum + parseFloat(bid[1]), 0);
+                const totalAsks = data.asks.reduce((sum, ask) => sum + parseFloat(ask[1]), 0);
+                
+                // Calculate imbalance percentage (-100 to +100)
+                // Positive = More buying pressure, Negative = More selling pressure
+                const imbalance = ((totalBids - totalAsks) / (totalBids + totalAsks)) * 100;
+                
+                return imbalance;
+            } catch (error) {
+                console.error(`Error fetching orderbook for ${symbol}:`, error);
+                return null;
+            }
+        }
+        
+        async function updateMarketData(symbol) {
+            // Only show for crypto assets (skip XAUUSD, DAX40, etc.)
+            const isCrypto = symbol.includes('USDT');
+            if (!isCrypto) {
+                console.log(`⏭️ Skipping market data for ${symbol} (not crypto)`);
+                return;
+            }
+            
+            // Check cache first
+            const cacheKey = symbol;
+            const now = Date.now();
+            if (marketDataCache[cacheKey] && (now - marketDataCache[cacheKey].timestamp) < MARKET_DATA_CACHE_DURATION) {
+                console.log(`📦 Using cached market data for ${symbol} (age: ${Math.floor((now - marketDataCache[cacheKey].timestamp) / 1000)}s)`);
+                const cached = marketDataCache[cacheKey];
+                
+                // Update UI with cached data
+                const fundingEl = document.getElementById(`funding-${symbol}`);
+                if (fundingEl && cached.funding !== null) {
+                    fundingEl.innerHTML = cached.fundingHtml;
+                }
+                
+                const bidAskEl = document.getElementById(`bidask-${symbol}`);
+                if (bidAskEl && cached.bidAsk !== null) {
+                    bidAskEl.innerHTML = cached.bidAskHtml;
+                }
+                
+                const orderbookEl = document.getElementById(`orderbook-${symbol}`);
+                if (orderbookEl && cached.orderbook !== null) {
+                    orderbookEl.innerHTML = cached.orderbookHtml;
+                }
+                
+                return; // Skip API calls
+            }
+            
+            console.log(`📊 Fetching fresh market data for ${symbol}...`);
+            
+            const cacheData = { timestamp: now, funding: null, bidAsk: null, orderbook: null };
+            
+            // Update Funding Rate
+            try {
+                const fundingRate = await fetchFundingRate(symbol);
+                const fundingEl = document.getElementById(`funding-${symbol}`);
+                console.log(`   Funding element exists: ${!!fundingEl}, Rate: ${fundingRate}`);
+                if (fundingEl) {
+                    if (fundingRate !== null && fundingRate !== undefined) {
+                        const color = fundingRate > 0 ? '#10b981' : fundingRate < 0 ? '#ef4444' : '#6b7280';
+                        const html = `<span style="color: ${color};">${fundingRate > 0 ? '+' : ''}${fundingRate.toFixed(4)}%</span>`;
+                        fundingEl.innerHTML = html;
+                        cacheData.funding = fundingRate;
+                        cacheData.fundingHtml = html;
+                        console.log(`   ✅ Funding rate updated: ${fundingRate.toFixed(4)}%`);
+                    } else {
+                        const html = `<span style="color: #999; font-size: 0.85em;">N/A</span>`;
+                        fundingEl.innerHTML = html;
+                        cacheData.fundingHtml = html;
+                        console.log(`   ⚠️ Funding rate API blocked or failed`);
+                    }
+                }
+            } catch (error) {
+                console.error(`   ❌ Error updating funding rate:`, error);
+            }
+            
+            // Update Bid/Ask Walls
+            try {
+                const bidAsk = await fetchBidAsk(symbol);
+                const bidAskEl = document.getElementById(`bidask-${symbol}`);
+                console.log(`   BidAsk element exists: ${!!bidAskEl}, Data:`, bidAsk);
+                if (bidAskEl) {
+                    if (bidAsk) {
+                        const wallDiff = bidAsk.bidWalls - bidAsk.askWalls;
+                        const color = wallDiff > 0 ? '#10b981' : wallDiff < 0 ? '#ef4444' : '#6b7280';
+                        const html = `<span style="color: #10b981;">B:${bidAsk.bidWalls}</span> / <span style="color: #ef4444;">A:${bidAsk.askWalls}</span> <span style="color: ${color}; font-weight: 700;">(${wallDiff > 0 ? '+' : ''}${wallDiff})</span>`;
+                        bidAskEl.innerHTML = html;
+                        cacheData.bidAsk = bidAsk;
+                        cacheData.bidAskHtml = html;
+                        console.log(`   ✅ Walls updated: B:${bidAsk.bidWalls} A:${bidAsk.askWalls}`);
+                    } else {
+                        const html = `<span style="color: #999; font-size: 0.85em;">N/A</span>`;
+                        bidAskEl.innerHTML = html;
+                        cacheData.bidAskHtml = html;
+                        console.log(`   ⚠️ Orderbook API blocked or failed`);
+                    }
+                }
+            } catch (error) {
+                console.error(`   ❌ Error updating walls:`, error);
+            }
+            
+            // Update Orderbook Imbalance
+            try {
+                const imbalance = await fetchOrderbookImbalance(symbol);
+                const orderbookEl = document.getElementById(`orderbook-${symbol}`);
+                console.log(`   Orderbook element exists: ${!!orderbookEl}, Imbalance: ${imbalance}`);
+                if (orderbookEl) {
+                    if (imbalance !== null && imbalance !== undefined) {
+                        const color = imbalance > 10 ? '#10b981' : imbalance < -10 ? '#ef4444' : '#f59e0b';
+                        const arrow = imbalance > 10 ? '📈' : imbalance < -10 ? '📉' : '➡️';
+                        const html = `<span style="color: ${color};">${arrow} ${imbalance.toFixed(1)}%</span>`;
+                        orderbookEl.innerHTML = html;
+                        cacheData.orderbook = imbalance;
+                        cacheData.orderbookHtml = html;
+                        console.log(`   ✅ Orderbook updated: ${imbalance.toFixed(1)}%`);
+                    } else {
+                        const html = `<span style="color: #999; font-size: 0.85em;">N/A</span>`;
+                        orderbookEl.innerHTML = html;
+                        cacheData.orderbookHtml = html;
+                        console.log(`   ⚠️ Orderbook API blocked or failed`);
+                    }
+                }
+            } catch (error) {
+                console.error(`   ❌ Error updating orderbook:`, error);
+            }
+            
+            // Store in cache
+            marketDataCache[cacheKey] = cacheData;
+        }
+        
+        // ==========================================
+        // TECHNICAL INDICATORS
+        // ==========================================
+        
+        
+
+function calculateEMA(values, period) {
+            const k = 2 / (period + 1);
+            const ema = [values[0]];
+            for (let i = 1; i < values.length; i++) {
+                ema[i] = values[i] * k + ema[i - 1] * (1 - k);
+            }
+            return ema;
+        }
+        
+        function calculateSpine(data) {
+            // Mid = EMA(close, 50)
+            const ema50 = calculateEMA(data.map(d => d.close), 50);
+            // MAMid (Spine) = EMA(Mid, 70)
+            const spine = calculateEMA(ema50, 70);
+            return spine;
+        }
+        
+        function calculateRSI(data, period = 14) {
+            const changes = [];
+            for (let i = 1; i < data.length; i++) {
+                changes.push(data[i].close - data[i - 1].close);
+            }
+            
+            let avgGain = 0, avgLoss = 0;
+            for (let i = 0; i < period; i++) {
+                if (changes[i] > 0) avgGain += changes[i];
+                else avgLoss -= changes[i];
+            }
+            avgGain /= period;
+            avgLoss /= period;
+            
+            const rsi = [avgLoss === 0 ? 100 : 100 - (100 / (1 + avgGain / avgLoss))];
+            
+            for (let i = period; i < changes.length; i++) {
+                const gain = changes[i] > 0 ? changes[i] : 0;
+                const loss = changes[i] < 0 ? -changes[i] : 0;
+                avgGain = (avgGain * (period - 1) + gain) / period;
+                avgLoss = (avgLoss * (period - 1) + loss) / period;
+                rsi.push(avgLoss === 0 ? 100 : 100 - (100 / (1 + avgGain / avgLoss)));
+            }
+            
+            while (rsi.length < data.length) rsi.unshift(rsi[0]);
+            return rsi;
+        }
+        
+        function calculatePSAR(data, step = 0.02, max = 0.2) {
+            const psar = [];
+            let trend = 1, sar = data[0].low, ep = data[0].high, af = step;
+            
+            for (let i = 0; i < data.length; i++) {
+                psar.push(sar);
+                if (trend === 1) {
+                    if (data[i].low < sar) {
+                        trend = -1; sar = ep; ep = data[i].low; af = step;
+                    } else {
+                        sar = sar + af * (ep - sar);
+                        if (data[i].high > ep) {
+                            ep = data[i].high;
+                            af = Math.min(af + step, max);
+                        }
+                    }
+                } else {
+                    if (data[i].high > sar) {
+                        trend = 1; sar = ep; ep = data[i].high; af = step;
+                    } else {
+                        sar = sar + af * (ep - sar);
+                        if (data[i].low < ep) {
+                            ep = data[i].low;
+                            af = Math.min(af + step, max);
+                        }
+                    }
+                }
+            }
+            return psar;
+        }
+        
+        function calculateATR(data, period = 14) {
+            const tr = [];
+            for (let i = 1; i < data.length; i++) {
+                tr.push(Math.max(
+                    data[i].high - data[i].low,
+                    Math.abs(data[i].high - data[i - 1].close),
+                    Math.abs(data[i].low - data[i - 1].close)
+                ));
+            }
+            
+            let atr = tr.slice(0, period).reduce((a, b) => a + b, 0) / period;
+            const atrArray = [atr];
+            for (let i = period; i < tr.length; i++) {
+                atr = (atr * (period - 1) + tr[i]) / period;
+                atrArray.push(atr);
+            }
+            while (atrArray.length < data.length) atrArray.unshift(atrArray[0]);
+            return atrArray;
+        }
+        
+        
+
+        
+        // ==========================================
+        // AI ENTRY TIMING ANALYSIS
+        // ==========================================
+        
+        function analyzeEntryTiming(data, scores, action, marketData = {}) {
+            const rsi14 = calculateRSI(data, 14);
+            const lastRSI = rsi14[rsi14.length - 1];
+            const prevRSI = rsi14[rsi14.length - 2];
+            const rsiMomentum = lastRSI - prevRSI;
+            
+            const atr = calculateATR(data);
+            const lastATR = atr[atr.length - 1];
+            const currentPrice = data[data.length - 1].close;
+            const volatility = (lastATR / currentPrice) * 100;
+            
+            const recentClose = data.slice(-10).map(d => d.close);
+            const priceChange = ((recentClose[9] - recentClose[0]) / recentClose[0]) * 100;
+            
+            const recentVolume = data.slice(-20).map(d => d.volume);
+            const avgVolume = recentVolume.reduce((a,b) => a+b) / 20;
+            const lastVolume = data[data.length - 1].volume;
+            const volumeRatio = lastVolume / avgVolume;
+            
+            const { fundingRate, bidWalls, askWalls, imbalance } = marketData;
+            
+            let microBias = 0;
+            let microReason = [];
+            
+            if (fundingRate !== null && fundingRate !== undefined) {
+                if (fundingRate > 0.01) {
+                    microBias -= 0.3;
+                    microReason.push(`overcrowded longs (funding ${fundingRate.toFixed(4)}%)`);
+                } else if (fundingRate < -0.01) {
+                    microBias += 0.3;
+                    microReason.push(`overcrowded shorts (funding ${fundingRate.toFixed(4)}%)`);
+                }
+            }
+            
+            if (bidWalls !== null && askWalls !== null) {
+                const wallRatio = bidWalls / (askWalls || 1);
+                if (wallRatio > 1.5) {
+                    microBias += 0.3;
+                    microReason.push(`strong bid support`);
+                } else if (wallRatio < 0.67) {
+                    microBias -= 0.3;
+                    microReason.push(`heavy ask resistance`);
+                }
+            }
+            
+            if (imbalance !== null && imbalance !== undefined) {
+                if (imbalance > 15) {
+                    microBias += 0.4;
+                    microReason.push(`strong buying pressure (${imbalance.toFixed(1)}% imbalance)`);
+                } else if (imbalance < -15) {
+                    microBias -= 0.4;
+                    microReason.push(`strong selling pressure (${imbalance.toFixed(1)}% imbalance)`);
+                }
+            }
+            
+            const microReasonText = microReason.length > 0 ? ' Market: ' + microReason.join(', ') + '.' : '';
+            
+            if (action === 'LONG') {
+                if (microBias < -0.5) {
+                    return {
+                        timing: "LONG with CAUTION",
+                        reason: `RSI ${lastRSI.toFixed(0)}.${microReasonText} Bearish market structure!`,
+                        confidence: "low"
+                    };
+                }
+                
+                if (lastRSI > 70) {
+                    return {
+                        timing: "LONG after pullback",
+                        reason: `RSI ${lastRSI.toFixed(0)} overbought. Wait for correction to 60-65.${microReasonText}`,
+                        confidence: "medium"
+                    };
+                }
+                
+                if (volatility > 4.0 && Math.abs(priceChange) < 1.0) {
+                    return {
+                        timing: "LONG after consolidation",
+                        reason: `High volatility (${volatility.toFixed(1)}%) sideways. Wait for breakout.`,
+                        confidence: "low"
+                    };
+                }
+                
+                if (lastRSI >= 50 && lastRSI <= 70 && priceChange > 1.0 && rsiMomentum > 0 && volatility < 3.0 && volumeRatio > 1.2) {
+                    const microBoost = microBias > 0.5 ? ' EXCELLENT' : '';
+                    return {
+                        timing: `LONG NOW${microBoost}`,
+                        reason: `Strong bullish momentum (+${priceChange.toFixed(1)}%), RSI ${lastRSI.toFixed(0)}, low volatility, high volume.${microReasonText} Ideal entry!`,
+                        confidence: microBias > 0.5 ? "very high" : "high"
+                    };
+                }
+                
+                if (lastRSI >= 50 && priceChange > 0 && volumeRatio > 0.8) {
+                    const conf = microBias > 0.3 ? "high" : microBias < -0.3 ? "low" : "medium";
+                    const warning = microBias < -0.3 ? " CAUTION" : "";
+                    return {
+                        timing: `LONG NOW${warning}`,
+                        reason: `Bullish bias, RSI ${lastRSI.toFixed(0)}, volume ${(volumeRatio * 100).toFixed(0)}%.${microReasonText}`,
+                        confidence: conf
+                    };
+                }
+                
+                if (lastRSI >= 50 && priceChange > 0 && volumeRatio <= 0.8) {
+                    return {
+                        timing: "LONG with caution",
+                        reason: `Bullish bias but LOW VOLUME (${(volumeRatio * 100).toFixed(0)}%).${microReasonText}`,
+                        confidence: "low"
+                    };
+                }
+                
+                return {
+                    timing: "LONG with caution",
+                    reason: `Mixed signals. RSI ${lastRSI.toFixed(0)}.${microReasonText}`,
+                    confidence: "low"
+                };
+            }
+            
+            if (action === 'SHORT') {
+                if (microBias > 0.5) {
+                    return {
+                        timing: "SHORT with CAUTION",
+                        reason: `RSI ${lastRSI.toFixed(0)}.${microReasonText} Bullish market structure!`,
+                        confidence: "low"
+                    };
+                }
+                
+                if (lastRSI < 30) {
+                    return {
+                        timing: "SHORT after rally",
+                        reason: `RSI ${lastRSI.toFixed(0)} oversold. Wait for bounce to 35-40.${microReasonText}`,
+                        confidence: "medium"
+                    };
+                }
+                
+                if (volatility > 4.0 && Math.abs(priceChange) < 1.0) {
+                    return {
+                        timing: "SHORT after consolidation",
+                        reason: `High volatility (${volatility.toFixed(1)}%) sideways. Wait for breakdown.`,
+                        confidence: "low"
+                    };
+                }
+                
+                if (lastRSI <= 50 && lastRSI >= 30 && priceChange < -1.0 && rsiMomentum < 0 && volatility < 3.0 && volumeRatio > 1.2) {
+                    const microBoost = microBias < -0.5 ? ' EXCELLENT' : '';
+                    return {
+                        timing: `SHORT NOW${microBoost}`,
+                        reason: `Strong bearish momentum (-${Math.abs(priceChange).toFixed(1)}%), RSI ${lastRSI.toFixed(0)}, low volatility, high volume.${microReasonText} Ideal entry!`,
+                        confidence: microBias < -0.5 ? "very high" : "high"
+                    };
+                }
+                
+                if (lastRSI <= 50 && priceChange < 0 && volumeRatio > 0.8) {
+                    const conf = microBias < -0.3 ? "high" : microBias > 0.3 ? "low" : "medium";
+                    const warning = microBias > 0.3 ? " CAUTION" : "";
+                    return {
+                        timing: `SHORT NOW${warning}`,
+                        reason: `Bearish bias, RSI ${lastRSI.toFixed(0)}, volume ${(volumeRatio * 100).toFixed(0)}%.${microReasonText}`,
+                        confidence: conf
+                    };
+                }
+                
+                if (lastRSI <= 50 && priceChange < 0 && volumeRatio <= 0.8) {
+                    return {
+                        timing: "SHORT with caution",
+                        reason: `Bearish bias but LOW VOLUME (${(volumeRatio * 100).toFixed(0)}%).${microReasonText}`,
+                        confidence: "low"
+                    };
+                }
+                
+                return {
+                    timing: "SHORT with caution",
+                    reason: `Mixed signals. RSI ${lastRSI.toFixed(0)}.${microReasonText}`,
+                    confidence: "low"
+                };
+            }
+            
+            return {
+                timing: "WAIT",
+                reason: "No clear directional bias detected.",
+                confidence: "low"
+            };
+        }
+        
+async function calculateKhahanAScores(symbol) {
+            let priceAbove = 0, priceBelow = 0;
+            let rsiAbove = 0, rsiBelow = 0;
+            let obCount = 0, osCount = 0;
+            let psarBull = 0, psarBear = 0;
+            
+            // Fetch ALL timeframes in PARALLEL for speed
+            const fetchPromises = TIMEFRAMES.map(tf => fetchBinanceData(symbol, tf, 200));
+            const allData = await Promise.all(fetchPromises);
+            
+            // Analyze each timeframe
+            for (let i = 0; i < TIMEFRAMES.length; i++) {
+                const data = allData[i];
+                if (!data || data.length < 150) continue;
+                
+                const spine = calculateSpine(data);
+                const lastClose = data[data.length - 1].close;
+                const lastSpine = spine[spine.length - 1];
+                
+                // 🎯 IMPROVEMENT #1: TREND FILTER
+                // Check if Spine is actually trending (not just price above/below)
+                const spineSlope = (spine[spine.length - 1] - spine[spine.length - 10]) / spine[spine.length - 10];
+                const isTrendingUp = spineSlope > 0.001;    // 0.1% increase over 10 candles
+                const isTrendingDown = spineSlope < -0.001; // 0.1% decrease over 10 candles
+                
+                // Only count if price is above Spine AND Spine is trending up
+                if (lastClose > lastSpine && isTrendingUp) priceAbove++;
+                // Only count if price is below Spine AND Spine is trending down
+                if (lastClose < lastSpine && isTrendingDown) priceBelow++;
+                
+                const rsi14 = calculateRSI(data, 14);
+                if (rsi14[rsi14.length - 1] > 50) rsiAbove++;
+                if (rsi14[rsi14.length - 1] < 50) rsiBelow++;
+                
+                const rsi7 = calculateRSI(data, 7);
+                if (rsi7[rsi7.length - 1] > 70) obCount++;
+                if (rsi7[rsi7.length - 1] < 30) osCount++;
+                
+                const psar = calculatePSAR(data);
+                const lastPSAR = psar[psar.length - 1];
+                const lastHigh = data[data.length - 1].high;
+                const lastLow = data[data.length - 1].low;
+                
+                if (lastPSAR < lastLow) psarBull++;
+                if (lastPSAR > lastHigh) psarBear++;
+            }
+            
+            const tfCount = TIMEFRAMES.length;
+            const bullScore = (priceAbove + rsiAbove + osCount + psarBull) / (tfCount * 4);
+            const bearScore = (priceBelow + rsiBelow + obCount + psarBear) / (tfCount * 4);
+            
+            return {
+                bullScore, bearScore,
+                priceAbove, priceBelow,
+                psarBull, psarBear,
+                obScore: obCount,  // Overbought score
+                osScore: osCount   // Oversold score
+            };
+        }
+        
+        // ==========================================
+        // SIGNAL GENERATION
+        // ==========================================
+        
+        
+
+async function generateSignalForAsset(symbol, qualityMode, exitQuality) {
+            try {
+                console.log(`\n🔍 Generating signal for ${symbol}:`);
+                console.log(`   Quality Mode: ${qualityMode}`);
+                console.log(`   Exit Strategy: ${exitQuality} (NOTE: Exit strategy ONLY affects TP/SL, NOT signal direction!)`);
+                
+                const scores = await calculateKhahanAScores(symbol);
+                console.log(`   Bull Score: ${(scores.bullScore * 100).toFixed(1)}%`);
+                console.log(`   Bear Score: ${(scores.bearScore * 100).toFixed(1)}%`);
+                console.log(`   PSAR Bull: ${scores.psarBull}, PSAR Bear: ${scores.psarBear}`);
+                
+                const threshold = getQualityThresholds()[qualityMode];
+                console.log(`   Thresholds: Score ${(threshold.score * 100).toFixed(0)}%, PSAR ${threshold.psarGate}`);
+                
+                // Get 1h data for AI analysis FIRST
+                const data = await fetchBinanceData(symbol, '1h', currentSettings.candlesLimit);
+                const currentPrice = data[data.length - 1].close;
+                const atr = calculateATR(data, currentSettings.atrPeriod);
+                const currentATR = atr[atr.length - 1];
+                
+                let action = 'WAIT';
+                let confidence = 0;
+                
+                // Safety check for scores
+                if (!scores || typeof scores.bullScore !== 'number' || typeof scores.bearScore !== 'number') {
+                    console.error(`   ❌ Invalid scores object:`, scores);
+                    return null;
+                }
+                
+                // Simplified logic: Check EITHER score threshold OR psar gate (not both)
+                const bullMet = scores.bullScore >= threshold.score || scores.psarBull >= threshold.psarGate;
+                const bearMet = scores.bearScore >= threshold.score || scores.psarBear >= threshold.psarGate;
+                
+                console.log(`   Thresholds: Score ${(threshold.score * 100).toFixed(0)}%, PSAR ${threshold.psarGate}`);
+                console.log(`   Bull Met: ${bullMet} (score: ${(scores.bullScore * 100).toFixed(1)}% >= ${(threshold.score * 100).toFixed(0)}% ? ${scores.bullScore >= threshold.score} OR psar: ${scores.psarBull} >= ${threshold.psarGate} ? ${scores.psarBull >= threshold.psarGate})`);
+                console.log(`   Bear Met: ${bearMet} (score: ${(scores.bearScore * 100).toFixed(1)}% >= ${(threshold.score * 100).toFixed(0)}% ? ${scores.bearScore >= threshold.score} OR psar: ${scores.psarBear} >= ${threshold.psarGate} ? ${scores.psarBear >= threshold.psarGate})`);
+                
+                if (bullMet && bearMet) {
+                    // Both directions strong - pick stronger one
+                    action = scores.bullScore > scores.bearScore ? 'LONG' : 'SHORT';
+                    confidence = Math.max(scores.bullScore, scores.bearScore) * 10;
+                    console.log(`   → BOTH met, choosing ${action} (Bull: ${scores.bullScore.toFixed(3)} vs Bear: ${scores.bearScore.toFixed(3)})`);
+                } else if (bullMet) {
+                    action = 'LONG';
+                    confidence = scores.bullScore * 10;
+                    console.log(`   → LONG signal`);
+                } else if (bearMet) {
+                    action = 'SHORT';
+                    confidence = scores.bearScore * 10;
+                    console.log(`   → SHORT signal`);
+                } else {
+                    console.log(`   → WAIT (no threshold met)`);
+                    // Don't return early - continue like main HTML does
+                }
+                
+                // Fetch market microstructure data (only for crypto)
+                let marketData = { fundingRate: null, bidWalls: null, askWalls: null, imbalance: null };
+                if (symbol.includes('USDT')) {
+                    marketData.fundingRate = await fetchFundingRate(symbol);
+                    const bidAsk = await fetchBidAsk(symbol);
+                    if (bidAsk) {
+                        marketData.bidWalls = bidAsk.bidWalls;
+                        marketData.askWalls = bidAsk.askWalls;
+                    }
+                    marketData.imbalance = await fetchOrderbookImbalance(symbol);
+                    
+                    console.log(`   📊 Market Microstructure:`);
+                    console.log(`      Funding Rate: ${marketData.fundingRate ? (marketData.fundingRate > 0 ? '+' : '') + marketData.fundingRate.toFixed(4) + '%' : 'N/A'}`);
+                    console.log(`      Bid Walls: ${marketData.bidWalls || 'N/A'}, Ask Walls: ${marketData.askWalls || 'N/A'}`);
+                    console.log(`      Orderbook Imbalance: ${marketData.imbalance ? marketData.imbalance.toFixed(1) + '%' : 'N/A'}`);
+                }
+                
+                // AI timing analysis with market microstructure
+                const aiAnalysis = analyzeEntryTiming(data, scores, action, marketData);
+                
+                // SMART ENTRY PRICE CALCULATION (Limit Order, not Market!)
+                let entryPrice = currentPrice;
+                
+                if (action === 'LONG') {
+                    if (aiAnalysis.timing.includes("NOW")) {
+                        // For NOW signals, entry = current price (no offset)
+                        entryPrice = currentPrice;
+                    } else if (aiAnalysis.timing.includes("pullback")) {
+                        const rsi = calculateRSI(data, currentSettings.rsiPeriod14);
+                        const lastRSI = rsi[rsi.length - 1];
+                        const pullbackPercent = lastRSI > 75 ? 
+                            currentSettings.longPullbackMax : 
+                            lastRSI > 70 ? 
+                            (currentSettings.longPullbackMin + currentSettings.longPullbackMax) / 2 : 
+                            currentSettings.longPullbackMin;
+                        entryPrice = currentPrice * (1 - pullbackPercent / 100);
+                    } else if (aiAnalysis.timing.includes("consolidation")) {
+                        entryPrice = currentPrice * (1 + currentSettings.longConsolidation / 100);
+                    } else {
+                        entryPrice = currentPrice * 0.995;
+                    }
+                } else if (action === 'SHORT') {
+                    if (aiAnalysis.timing.includes("NOW")) {
+                        // For NOW signals, entry = current price (no offset)
+                        entryPrice = currentPrice;
+                    } else if (aiAnalysis.timing.includes("rally")) {
+                        const rsi = calculateRSI(data, currentSettings.rsiPeriod14);
+                        const lastRSI = rsi[rsi.length - 1];
+                        const rallyPercent = lastRSI < 25 ? 
+                            currentSettings.shortRallyMax : 
+                            lastRSI < 30 ? 
+                            (currentSettings.shortRallyMin + currentSettings.shortRallyMax) / 2 : 
+                            currentSettings.shortRallyMin;
+                        entryPrice = currentPrice * (1 + rallyPercent / 100);
+                    } else if (aiAnalysis.timing.includes("consolidation")) {
+                        entryPrice = currentPrice * (1 - currentSettings.shortConsolidation / 100);
+                    } else {
+                        entryPrice = currentPrice * 1.005;
+                    }
+                }
+                
+                // TP/SL calculation based on entry price
+                const exitStrat = getExitStrategies()[exitQuality];
+                
+                if (!exitStrat) {
+                    console.error(`Invalid exit quality: ${exitQuality}`);
+                    return null;
+                }
+                
+                let tpPrice, slPrice;
+                
+                if (action === 'LONG') {
+                    tpPrice = exitStrat.useATR ? 
+                        entryPrice + (currentATR * exitStrat.atrMult) :
+                        entryPrice * (1 + exitStrat.tpFixed / 100);
+                    slPrice = entryPrice * (1 - exitStrat.slFixed / 100);
+                } else if (action === 'SHORT') {
+                    tpPrice = exitStrat.useATR ?
+                        entryPrice - (currentATR * exitStrat.atrMult) :
+                        entryPrice * (1 - exitStrat.tpFixed / 100);
+                    slPrice = entryPrice * (1 + exitStrat.slFixed / 100);
+                } else {
+                    // This shouldn't happen (WAIT returns null earlier), but safety check
+                    console.error(`Invalid action for TP/SL: ${action}`);
+                    return null;
+                }
+                
+                const isActive = activePositions[symbol] !== undefined;
+                
+                // Lock entry/TP/SL if signal says NOW (don't recalculate on refresh)
+                const isNowSignal = aiAnalysis.timing.includes("NOW");
+                
+                return {
+                    id: `${symbol}_${Date.now()}`, // Unique ID for each signal
+                    symbol, 
+                    action, 
+                    timing: aiAnalysis.timing, // Map aiTiming to timing
+                    reason: aiAnalysis.reason, // Add reason
+                    confidence: confidence.toFixed(1),
+                    currentPrice,
+                    entryPrice,
+                    tpPrice, 
+                    slPrice,
+                    bullScore: (scores.bullScore * 100).toFixed(1),
+                    bearScore: (scores.bearScore * 100).toFixed(1),
+                    obScore: scores.obScore || 0,
+                    osScore: scores.osScore || 0,
+                    psarBull: scores.psarBull,
+                    psarBear: scores.psarBear,
+                    aiTiming: aiAnalysis.timing,
+                    aiReason: aiAnalysis.reason,
+                    aiConfidence: aiAnalysis.confidence,
+                    fundingRate: marketData.fundingRate,
+                    bidWall: marketData.bidWalls,
+                    askWall: marketData.askWalls,
+                    orderbookImbalance: marketData.imbalance,
+                    status: isActive ? 'ACTIVE' : 'NEW',
+                    timestamp: new Date(),
+                    lockedPrices: isNowSignal,
+                    originalEntry: entryPrice,
+                    originalTP: tpPrice,
+                    originalSL: slPrice
+                };
+                
+            } catch (error) {
+                console.error(`Error for ${symbol}:`, error);
+                return { symbol, action: 'ERROR', error: error.message };
+            }
+        }
+        
+        
+
+async function startScan() {
+            if (isScanning) return;
+            
+            isScanning = true;
+            discoveries = [];
+            
+            const allAssets = [...DEFAULT_ASSETS, ...customAssets];
+            
+            // Scan ALL assets for complete coverage
+            const assetsToScan = allAssets;
+            
+            const scanStatus = document.getElementById('scanStatus');
+            const container = document.getElementById('discoveriesTab');
+            
+            container.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <div>Scanning ${assetsToScan.length} top assets...</div>
+                </div>
+            `;
+            
+            // Process assets one by one with small delay to avoid overwhelming Binance API
+            let scanned = 0;
+            
+            for (const symbol of assetsToScan) {
+                try {
+                    scanned++;
+                    scanStatus.textContent = `🔍 Scanning ${symbol}... (${scanned}/${assetsToScan.length})`;
+                    
+                    const signal = await generateSignalForAsset(symbol, settings.quality || 'balanced', 'moderate');
+                    
+                    // Add ALL signals (including WAIT) like main HTML does
+                    // Filtering happens at display time
+                    if (signal) {
+                        discoveries.push(signal);
+                        if (signal.action !== 'WAIT' && signal.action !== 'ERROR') {
+                            console.log(`✨ ${signal.symbol} - ${signal.action} - ${signal.timing || signal.aiTiming}`);
+                        }
+                    }
+                    
+                    // Small delay between requests (100ms)
+                    await sleep(100);
+                    
+                } catch (err) {
+                    console.error(`Error scanning ${symbol}:`, err);
+                }
+            }
+            
+            const validSignals = discoveries.filter(d => d && d.action && d.action !== 'WAIT' && d.action !== 'ERROR');
+            
+            // Don't show scan complete message (silent mode)
+            scanStatus.textContent = '';
+            document.getElementById('discoveryCount').textContent = validSignals.length;
+            
+            displayDiscoveries();
+            
+            // Play sound and/or voice announcement if signals found
+            if (validSignals.length > 0) {
+                if (settings.sound) {
+                    playSound();
+                }
+                if (settings.voice) {
+                    announceSignals(validSignals);
+                }
+            }
+            
+            isScanning = false;
+            
+            // Start auto-scan if enabled
+            if (settings.autoScan) {
+                startAutoScan();
+            }
+        }
+        
+        function startAutoScan() {
+            if (scanInterval) clearInterval(scanInterval);
+            
+            const intervalSeconds = settings.scanInterval || 15;
+            console.log(`⏱️ Auto-scan every ${intervalSeconds} seconds`);
+            
+            scanInterval = setInterval(() => {
+                if (currentTab === 'discoveries') {
+                    startScan();
+                }
+            }, intervalSeconds * 1000);
+        }
+        
+        // ===================================================================
+        // DISPLAY FUNCTIONS
+        // ===================================================================
+        
+        function displayDiscoveries() {
+            const container = document.getElementById('discoveriesTab');
+            
+            console.log('📊 Total discoveries:', discoveries.length);
+            
+            // Filter like main HTML: Only show signals with "NOW" in timing
+            let filtered = discoveries.filter(d => {
+                if (!d || !d.action) return false;
+                if (d.action === 'WAIT' || d.action === 'ERROR') return false;
+                
+                // CRITICAL: Only show NOW signals (immediate entry)
+                const timing = d.timing || d.aiTiming || '';
+                if (!timing.includes('NOW')) return false;
+                
+                // Apply user filter
+                if (currentFilter === 'all') return true;
+                if (currentFilter === 'excellent') return timing.includes('EXCELLENT');
+                if (currentFilter === 'long') return d.action === 'LONG';
+                if (currentFilter === 'short') return d.action === 'SHORT';
+                return true;
+            });
+            
+            console.log('📊 After filtering:', filtered.length, 'NOW signals');
+            
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🔍</div>
+                        <div class="empty-text">No Signals Found</div>
+                        <div class="empty-subtext">Tap "Scan Now" to discover new opportunities</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            try {
+                container.innerHTML = filtered.map((signal, index) => {
+                    try {
+                        // Detailed validation
+                        if (!signal) {
+                            console.error(`Signal ${index} is null/undefined`);
+                            return '';
+                        }
+                        
+                        if (!signal.entryPrice) {
+                            console.error(`Signal ${index} missing entryPrice:`, JSON.stringify(signal));
+                            return '';
+                        }
+                        
+                        if (!signal.tpPrice) {
+                            console.error(`Signal ${index} missing tpPrice:`, JSON.stringify(signal));
+                            return '';
+                        }
+                        
+                        if (!signal.slPrice) {
+                            console.error(`Signal ${index} missing slPrice:`, JSON.stringify(signal));
+                            return '';
+                        }
+                        
+                        const tpPercent = ((signal.tpPrice - signal.entryPrice) / signal.entryPrice * 100);
+                        const slPercent = ((signal.slPrice - signal.entryPrice) / signal.entryPrice * 100);
+                        const isExcellent = signal.timing && signal.timing.includes('EXCELLENT');
+                        
+                        return `
+                            <div class="discovery-card ${(signal.action || '').toLowerCase()}">
+                                <button class="dismiss-btn" onclick="dismissDiscovery('${signal.id}')">✕</button>
+                                
+                                <div class="card-header">
+                                    <div>
+                                        <div class="symbol">${signal.action === 'LONG' ? '🚀' : '📉'} ${signal.symbol || 'UNKNOWN'}</div>
+                                        <div class="timing ${isExcellent ? 'excellent' : ''}">${signal.timing || 'NOW'}</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="prices">
+                                    <div class="price-box">
+                                        <div class="price-label">ENTRY</div>
+                                        <div class="price-value">$${formatPrice(signal.entryPrice)}</div>
+                                    </div>
+                                    <div class="price-box tp">
+                                        <div class="price-label">TP</div>
+                                        <div class="price-value">$${formatPrice(signal.tpPrice)}</div>
+                                        <div class="price-percent">${tpPercent > 0 ? '+' : ''}${tpPercent.toFixed(1)}%</div>
+                                    </div>
+                                    <div class="price-box sl">
+                                        <div class="price-label">SL</div>
+                                        <div class="price-value">$${formatPrice(signal.slPrice)}</div>
+                                        <div class="price-percent">${slPercent > 0 ? '+' : ''}${slPercent.toFixed(1)}%</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="stats">
+                                    <div class="stat">📊 Bull: <strong>${signal.bullScore || 0}%</strong></div>
+                                    <div class="stat">⚡ Confidence: <strong>${signal.confidence || 0}/10</strong></div>
+                                </div>
+                            
+                            <div class="reason">${signal.reason || signal.aiReason || 'Signal detected'}</div>
+                            
+                            <div class="action-btns">
+                                <button class="btn btn-take-position" onclick="takePosition('${signal.id}')">
+                                    💼 Take Position
+                                </button>
+                                <button class="btn btn-chart" onclick="openChart('${signal.symbol}')">
+                                    📈 Chart
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    } catch (cardErr) {
+                        console.error(`Error rendering signal card ${index}:`, cardErr, signal);
+                        return '';
+                    }
+                }).filter(card => card !== '').join('');
+                console.log('✅ Discoveries displayed successfully');
+            } catch (err) {
+                console.error('❌ Error displaying discoveries:', err);
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">⚠️</div>
+                        <div class="empty-text">Error Displaying Signals</div>
+                        <div class="empty-subtext">${err.message}</div>
+                    </div>
+                `;
+            }
+        }
+        
+        function displayPositions() {
+            const container = document.getElementById('positionsTab');
+            document.getElementById('positionCount').textContent = activePositions.length;
+            
+            if (activePositions.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📊</div>
+                        <div class="empty-text">No Active Positions</div>
+                        <div class="empty-subtext">Take a position from discoveries</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Check if we need to rebuild cards (position added/removed)
+            const existingCards = container.querySelectorAll('.discovery-card');
+            const needsRebuild = existingCards.length !== activePositions.length;
+            
+            if (needsRebuild) {
+                // Full rebuild only when positions change
+                container.innerHTML = activePositions.map(pos => {
+                    const currentPrice = pos.currentPrice || pos.entryPrice;
+                    let pnl, pnlPercent;
+                    
+                    if (pos.action === 'LONG') {
+                        pnl = (currentPrice - pos.entryPrice) * (settings.positionSize / pos.entryPrice);
+                        pnlPercent = ((currentPrice - pos.entryPrice) / pos.entryPrice) * 100;
+                    } else {
+                        pnl = (pos.entryPrice - currentPrice) * (settings.positionSize / pos.entryPrice);
+                        pnlPercent = ((pos.entryPrice - currentPrice) / pos.entryPrice) * 100;
+                    }
+                    
+                    const tpPercent = ((pos.tpPrice - pos.entryPrice) / pos.entryPrice * 100);
+                    const slPercent = ((pos.slPrice - pos.entryPrice) / pos.slPrice * 100);
+                    
+                    return `
+                        <div class="discovery-card active-position" data-position-id="${pos.id}">
+                            <div class="status-badge">🔴 LIVE</div>
+                            
+                            <div class="card-header">
+                                <div>
+                                    <div class="symbol">${pos.action === 'LONG' ? '🚀' : '📉'} ${pos.symbol}</div>
+                                    <div class="timing">${pos.action} Position</div>
+                                </div>
+                            </div>
+                            
+                            <div class="pnl-display">
+                                <div class="pnl-label">Current P&L</div>
+                                <div class="pnl-value ${pnl >= 0 ? 'profit' : 'loss'}" data-pnl-value>
+                                    ${pnl >= 0 ? '+' : ''}$${pnl.toFixed(2)}
+                                </div>
+                                <div class="pnl-percent ${pnl >= 0 ? 'profit' : 'loss'}" data-pnl-percent>
+                                    ${pnl >= 0 ? '+' : ''}${pnlPercent.toFixed(2)}%
+                                </div>
+                            </div>
+                            
+                            <div class="prices">
+                                <div class="price-box">
+                                    <div class="price-label">ENTRY</div>
+                                    <div class="price-value">$${formatPrice(pos.entryPrice)}</div>
+                                </div>
+                                <div class="price-box current">
+                                    <div class="price-label">CURRENT</div>
+                                    <div class="price-value" data-current-price>$${formatPrice(currentPrice)}</div>
+                                </div>
+                                <div class="price-box tp">
+                                    <div class="price-label">TP</div>
+                                    <div class="price-value">$${formatPrice(pos.tpPrice)}</div>
+                                    <div class="price-percent">${tpPercent > 0 ? '+' : ''}${tpPercent.toFixed(1)}%</div>
+                                </div>
+                                <div class="price-box sl">
+                                    <div class="price-label">SL</div>
+                                    <div class="price-value">$${formatPrice(pos.slPrice)}</div>
+                                    <div class="price-percent">${slPercent > 0 ? '+' : ''}${slPercent.toFixed(1)}%</div>
+                                </div>
+                            </div>
+                            
+                            <div class="action-btns">
+                                <button class="btn btn-close" onclick="closePosition('${pos.id}', 'manual')">
+                                    ❌ Close Position
+                                </button>
+                                <button class="btn btn-chart" onclick="openChart('${pos.symbol}')">
+                                    📈 Chart
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                // Only update values (no flashing!)
+                activePositions.forEach((pos, index) => {
+                    const card = container.querySelector(`[data-position-id="${pos.id}"]`);
+                    if (!card) return;
+                    
+                    const currentPrice = pos.currentPrice || pos.entryPrice;
+                    let pnl, pnlPercent;
+                    
+                    if (pos.action === 'LONG') {
+                        pnl = (currentPrice - pos.entryPrice) * (settings.positionSize / pos.entryPrice);
+                        pnlPercent = ((currentPrice - pos.entryPrice) / pos.entryPrice) * 100;
+                    } else {
+                        pnl = (pos.entryPrice - currentPrice) * (settings.positionSize / pos.entryPrice);
+                        pnlPercent = ((pos.entryPrice - currentPrice) / pos.entryPrice) * 100;
+                    }
+                    
+                    // Update only the dynamic values
+                    const pnlValueEl = card.querySelector('[data-pnl-value]');
+                    const pnlPercentEl = card.querySelector('[data-pnl-percent]');
+                    const currentPriceEl = card.querySelector('[data-current-price]');
+                    
+                    if (pnlValueEl) {
+                        pnlValueEl.textContent = `${pnl >= 0 ? '+' : ''}$${pnl.toFixed(2)}`;
+                        pnlValueEl.className = `pnl-value ${pnl >= 0 ? 'profit' : 'loss'}`;
+                    }
+                    
+                    if (pnlPercentEl) {
+                        pnlPercentEl.textContent = `${pnl >= 0 ? '+' : ''}${pnlPercent.toFixed(2)}%`;
+                        pnlPercentEl.className = `pnl-percent ${pnl >= 0 ? 'profit' : 'loss'}`;
+                    }
+                    
+                    if (currentPriceEl) {
+                        currentPriceEl.textContent = `$${formatPrice(currentPrice)}`;
+                    }
+                });
+            }
+        }
+        
+        function displayJournal() {
+            const listContainer = document.getElementById('journalList');
+            
+            if (journal.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📖</div>
+                        <div class="empty-text">No Trade History</div>
+                        <div class="empty-subtext">Closed positions will appear here</div>
+                    </div>
+                `;
+                updateJournalSummary();
+                return;
+            }
+            
+            listContainer.innerHTML = journal.slice().reverse().map(trade => {
+                const isWin = trade.pnl >= 0;
+                return `
+                    <div class="journal-card">
+                        <div class="journal-header">
+                            <div class="journal-symbol">${trade.action === 'LONG' ? '🚀' : '📉'} ${trade.symbol}</div>
+                            <div class="journal-result ${isWin ? 'win' : 'loss'}">
+                                ${isWin ? '✅ WIN' : '❌ LOSS'}
+                            </div>
+                        </div>
+                        
+                        <div class="journal-stats">
+                            <div class="journal-stat">
+                                <div class="journal-stat-label">P&L</div>
+                                <div class="journal-stat-value" style="color: ${isWin ? '#10b981' : '#ef4444'}">
+                                    ${trade.pnl >= 0 ? '+' : ''}$${trade.pnl.toFixed(2)}
+                                </div>
+                            </div>
+                            <div class="journal-stat">
+                                <div class="journal-stat-label">Return</div>
+                                <div class="journal-stat-value" style="color: ${isWin ? '#10b981' : '#ef4444'}">
+                                    ${trade.pnlPercent >= 0 ? '+' : ''}${trade.pnlPercent.toFixed(2)}%
+                                </div>
+                            </div>
+                            <div class="journal-stat">
+                                <div class="journal-stat-label">Entry</div>
+                                <div class="journal-stat-value">$${formatPrice(trade.entryPrice)}</div>
+                            </div>
+                            <div class="journal-stat">
+                                <div class="journal-stat-label">Exit</div>
+                                <div class="journal-stat-value">$${formatPrice(trade.exitPrice)}</div>
+                            </div>
+                            <div class="journal-stat">
+                                <div class="journal-stat-label">Exit Type</div>
+                                <div class="journal-stat-value">${trade.exitType.toUpperCase()}</div>
+                            </div>
+                            <div class="journal-stat">
+                                <div class="journal-stat-label">Duration</div>
+                                <div class="journal-stat-value">${formatDuration(trade.duration)}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="journal-time">${new Date(trade.closedAt).toLocaleString()}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            updateJournalSummary();
+        }
+        
+        function updateJournalSummary() {
+            const totalTrades = journal.length;
+            const wins = journal.filter(t => t.pnl >= 0).length;
+            const winRate = totalTrades > 0 ? (wins / totalTrades * 100) : 0;
+            const totalPnl = journal.reduce((sum, t) => sum + t.pnl, 0);
+            const avgPnl = totalTrades > 0 ? totalPnl / totalTrades : 0;
+            
+            document.getElementById('totalTrades').textContent = totalTrades;
+            document.getElementById('winRate').textContent = winRate.toFixed(0) + '%';
+            document.getElementById('totalProfit').textContent = (totalPnl >= 0 ? '+' : '') + '$' + totalPnl.toFixed(2);
+            document.getElementById('totalProfit').className = 'summary-value ' + (totalPnl >= 0 ? 'profit' : 'loss');
+            document.getElementById('avgPnl').textContent = (avgPnl >= 0 ? '+' : '') + '$' + avgPnl.toFixed(2);
+        }
+        
+        // ===================================================================
+        // POSITION MANAGEMENT
+        // ===================================================================
+        
+        function takePosition(signalId) {
+            console.log('🎯 Take Position clicked for:', signalId);
+            console.log('📊 Current discoveries:', discoveries);
+            
+            // Safety check: Ensure activePositions is an array
+            if (!Array.isArray(activePositions)) {
+                console.error('❌ activePositions is not an array! Type:', typeof activePositions);
+                console.error('❌ Value:', activePositions);
+                activePositions = [];
+                localStorage.setItem('kh_activePositions', '[]');
+            }
+            
+            const signal = discoveries.find(d => d.id === signalId);
+            if (!signal) {
+                console.error('❌ Signal not found!', signalId);
+                alert('Error: Signal not found!');
+                return;
+            }
+            
+            console.log('✅ Signal found:', signal);
+            
+            const position = {
+                ...signal,
+                currentPrice: signal.entryPrice,
+                openedAt: Date.now()
+            };
+            
+            console.log('📥 Adding position:', position);
+            console.log('📊 activePositions before push (type):', typeof activePositions, Array.isArray(activePositions));
+            
+            activePositions.push(position);
+            localStorage.setItem('kh_activePositions', JSON.stringify(activePositions));
+            
+            console.log('💾 Active positions after add:', activePositions);
+            
+            // Remove from discoveries
+            discoveries = discoveries.filter(d => d.id !== signalId);
+            
+            console.log('🔄 Switching to positions tab');
+            
+            // Switch to positions tab
+            switchTab('positions');
+            
+            // Start price updates
+            startPriceUpdates();
+            
+            if (settings.sound) playSound();
+            
+            alert(`✅ Position opened for ${signal.symbol}!`);
+        }
+        
+        async function closePosition(positionId, exitType) {
+            const position = activePositions.find(p => p.id === positionId);
+            if (!position) return;
+            
+            const currentPrice = position.currentPrice || position.entryPrice;
+            let pnl, pnlPercent;
+            
+            if (position.action === 'LONG') {
+                pnl = (currentPrice - position.entryPrice) * (settings.positionSize / position.entryPrice);
+                pnlPercent = ((currentPrice - position.entryPrice) / position.entryPrice) * 100;
+            } else {
+                pnl = (position.entryPrice - currentPrice) * (settings.positionSize / position.entryPrice);
+                pnlPercent = ((position.entryPrice - currentPrice) / position.entryPrice) * 100;
+            }
+            
+            const trade = {
+                ...position,
+                exitPrice: currentPrice,
+                exitType: exitType,
+                pnl: pnl,
+                pnlPercent: pnlPercent,
+                closedAt: Date.now(),
+                duration: Date.now() - position.openedAt
+            };
+            
+            journal.push(trade);
+            localStorage.setItem('kh_journal', JSON.stringify(journal));
+            
+            activePositions = activePositions.filter(p => p.id !== positionId);
+            localStorage.setItem('kh_activePositions', JSON.stringify(activePositions));
+            
+            displayPositions();
+            
+            if (settings.sound) playSound();
+            
+            const result = pnl >= 0 ? '✅ PROFIT' : '❌ LOSS';
+            alert(`${result}: ${position.symbol}\nP&L: ${pnl >= 0 ? '+' : ''}$${pnl.toFixed(2)} (${pnlPercent >= 0 ? '+' : ''}${pnlPercent.toFixed(2)}%)`);
+        }
+        
+        // ===================================================================
+        // LIVE PRICE UPDATES via WebSocket
+        // ===================================================================
+        
+        let priceWs = null;
+        
+        function startPriceUpdates() {
+            if (priceUpdateInterval) return;
+            if (activePositions.length === 0) return;
+            
+            // Close existing WebSocket if any
+            if (priceWs) {
+                priceWs.close();
+            }
+            
+            // Subscribe to all active position symbols via WebSocket
+            const symbols = activePositions.map(p => p.symbol);
+            priceWs = subscribeToPriceUpdates(symbols);
+            
+            // Also update UI every 2 seconds
+            priceUpdateInterval = setInterval(async () => {
+                if (activePositions.length === 0) {
+                    clearInterval(priceUpdateInterval);
+                    priceUpdateInterval = null;
+                    if (priceWs) priceWs.close();
+                    return;
+                }
+                
+                for (const position of activePositions) {
+                    // Use cached price from WebSocket
+                    const currentPrice = position.currentPrice;
+                    if (!currentPrice) continue;
+                    
+                    // Check TP/SL
+                    if (position.action === 'LONG') {
+                        if (currentPrice >= position.tpPrice) {
+                            await closePosition(position.id, 'tp');
+                        } else if (currentPrice <= position.slPrice) {
+                            await closePosition(position.id, 'sl');
+                        }
+                    } else {
+                        if (currentPrice <= position.tpPrice) {
+                            await closePosition(position.id, 'tp');
+                        } else if (currentPrice >= position.slPrice) {
+                            await closePosition(position.id, 'sl');
+                        }
+                    }
+                }
+                
+                localStorage.setItem('kh_activePositions', JSON.stringify(activePositions));
+                
+                if (currentTab === 'positions') {
+                    displayPositions();
+                }
+            }, 2000); // Update UI every 2 seconds
+        }
+        
+        // ===================================================================
+        // UI FUNCTIONS
+        // ===================================================================
+        
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            
+            if (tab === 'discoveries') {
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                document.getElementById('discoveriesTab').classList.add('active');
+                document.getElementById('filterBar').style.display = 'flex';
+            } else if (tab === 'positions') {
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('positionsTab').classList.add('active');
+                document.getElementById('filterBar').style.display = 'none';
+                displayPositions();
+                if (activePositions.length > 0) startPriceUpdates();
+            } else if (tab === 'assets') {
+                document.querySelectorAll('.tab')[2].classList.add('active');
+                document.getElementById('assetsTab').classList.add('active');
+                document.getElementById('filterBar').style.display = 'none';
+                displayAssets();
+            } else if (tab === 'journal') {
+                document.querySelectorAll('.tab')[3].classList.add('active');
+                document.getElementById('journalTab').classList.add('active');
+                document.getElementById('filterBar').style.display = 'none';
+                displayJournal();
+            }
+        }
+        
+        function displayAssets() {
+            const allAssets = [...DEFAULT_ASSETS, ...customAssets];
+            document.getElementById('assetCount').textContent = allAssets.length;
+            document.getElementById('allCount').textContent = allAssets.length;
+            document.getElementById('defaultCount').textContent = DEFAULT_ASSETS.length;
+            document.getElementById('customCountTab').textContent = customAssets.length;
+            
+            let assetsToShow = [];
+            if (currentAssetFilter === 'all') {
+                assetsToShow = allAssets;
+            } else if (currentAssetFilter === 'default') {
+                assetsToShow = DEFAULT_ASSETS;
+            } else if (currentAssetFilter === 'custom') {
+                assetsToShow = customAssets;
+            }
+            
+            const container = document.getElementById('assetsList');
+            
+            if (assetsToShow.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: #999; padding: 40px;">No assets in this category</div>';
+                return;
+            }
+            
+            container.innerHTML = assetsToShow.map(symbol => {
+                const isCustom = customAssets.includes(symbol);
+                return `
+                    <div class="asset-list-item ${isCustom ? 'custom' : ''}">
+                        <div style="display: flex; align-items: center;">
+                            <span class="asset-name">${symbol}</span>
+                            ${isCustom ? '<span class="asset-badge custom">Custom</span>' : '<span class="asset-badge">Default</span>'}
+                        </div>
+                        ${isCustom ? `<button class="delete-asset" onclick="removeAsset('${symbol}')">Remove</button>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function filterAssets(filter) {
+            currentAssetFilter = filter;
+            displayAssets();
+        }
+        
+        function addAssetFromTab() {
+            const input = document.getElementById('customAssetInput');
+            const symbol = input.value.trim().toUpperCase();
+            
+            if (!symbol) {
+                alert('Please enter a symbol');
+                return;
+            }
+            
+            if (!symbol.endsWith('USDT')) {
+                alert('Symbol must end with USDT (e.g., BTCUSDT)');
+                return;
+            }
+            
+            if (DEFAULT_ASSETS.includes(symbol)) {
+                alert('This asset is already in the default list!');
+                return;
+            }
+            
+            if (customAssets.includes(symbol)) {
+                alert('This asset is already in your custom list!');
+                return;
+            }
+            
+            customAssets.push(symbol);
+            localStorage.setItem('kh_customAssets', JSON.stringify(customAssets));
+            
+            input.value = '';
+            displayAssets();
+            
+            if (settings.sound) playSound();
+            
+            alert(`✅ ${symbol} added successfully!`);
+        }
+        
+        function removeAsset(symbol) {
+            if (!confirm(`Remove ${symbol} from custom assets?`)) return;
+            
+            customAssets = customAssets.filter(a => a !== symbol);
+            localStorage.setItem('kh_customAssets', JSON.stringify(customAssets));
+            
+            displayAssets();
+            
+            alert(`✅ ${symbol} removed!`);
+        }
+        
+        function setFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.filter === filter) {
+                    btn.classList.add('active');
+                }
+            });
+            displayDiscoveries();
+        }
+        
+        function dismissDiscovery(id) {
+            discoveries = discoveries.filter(d => d.id !== id);
+            document.getElementById('discoveryCount').textContent = discoveries.length;
+            displayDiscoveries();
+        }
+        
+        function openChart(symbol) {
+            // Open TradingView chart in new tab (iframe blocked by TradingView)
+            window.open(`https://www.tradingview.com/chart/?symbol=BINANCE:${symbol}`, '_blank');
+        }
+        
+        function playSound() {
+            const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSl3w/DciDcIE2K+7OqeVBAJTK3n77FfGggzit7xsnAkBSt9zPLaizsICWSy6+ynWBEJSKHg8bllHAU2k9ryzXouBSaAy/DajT0HGWK88+qhThAMUKzl8LVhGgY2j9jyz3kuBSZ/yO/alEEHEly26+uoVRQKRp7f8btqIgUpfcnw2Yw8CBJivezqn1ISCUtq4++1ZRwFN5Ta8s5+LgUlgMnw2osNwgSBy/DdkTwHGGO+7eyeThALUK3l8LVlHAU0j9jxzHsuBSl/yO7alEAHEly16+uoVBQLRZ7f8btoIQUpfsjv25A9BxJjve3qnlIRDEqp5O+yYBoGOJDa8M19MAUkgMfv2pE9BxljvvLsn08QDFCs5fG0ZRsGNpDY8cx8LgYlgcju25I+CAygWe3smFQRDEip5O+xYBkGOY/a0M18MAUkf8jv25E9CBdivuzrnlIRDUqp5O+xYRkGNo/Y8cx6LgYlgcjv3JE9CAygWe3smFURDEip5O+xYRkGOI/a0M18MAUkfsju3JI+CBljvuzrnlIRDUqo5O+xYRkGOI/Z8cx7LgYlgcfu3JI+CBljvuvrnlERDEqo5e+xYBkGOI/Y8s16LgUmgcfv3JI+BxhjvuzrnlERDEqo5e+xYBkGOI/Y8s16LgUmgcfv3JI+BxhjvuzrnlERDEqo5e+xYBkGOI/Y8s16LgUlgcfv3JI+BxhjvuzrnlERDEqo5e+xYBkGOI/Y8s16LgUlgcfv3JI+BxhjvuzrnlERDEqo5e+xYBkGOI/Y8s16LgUlgcfv3JI+BxhjvuzrnlERDEqo5e+xYBkGOI/Y8s16LgUlgcfv3JI+BxhjvuzrnlERDEqo5e+xYBkGOI/Y8s16LgUlgcfv3JI+BxhjvuzrnlERDEqo5e+xYBkGOI/Y8s16LgUlgcfv3JI+BxhjvuzrnlERDEqo5e+xYBkGOI/Y8s16LgUlgcfv3JI+BxhjvuzrnlERDEqo5e+xYBkGOI/Y8s16LgUlgcfv3JI+BxhjvuzrnlERDEqo5e+xYBkGOI/Y8s16LgUlgcfv3JI+BxhjvuzrnlERDEqo5e+xYBkGOI/Y8s16LgUlgcfv3JI+BxhjvuzrnlERDEqo5e+xYBkGOI/Y8s16LgUlgcfv3JI+BxhjvuzrnlERDEqo5e+xYBkGOI/Y8s16LgUlgcfv3JI+BxhjvuzrnlERDEqo5e+xYBkGOI/Y8s16LgUlgcfv3JI+Bxhjvuzrnl');
+            audio.volume = 0.3;
+            audio.play().catch(() => {});
+        }
+        
+        function announceSignals(signals) {
+            if (!settings.voice || signals.length === 0) return;
+            
+            // Use browser speech synthesis
+            const synth = window.speechSynthesis;
+            if (!synth) return;
+            
+            // Create announcement
+            let message = `${signals.length} signal${signals.length > 1 ? 's' : ''} found. `;
+            
+            signals.forEach((signal, index) => {
+                const action = signal.action === 'LONG' ? 'long' : 'short';
+                const symbol = signal.symbol.replace('USDT', '');
+                message += `${symbol} ${action}. `;
+                if (index >= 2) return; // Limit to first 3 signals
+            });
+            
+            const utterance = new SpeechSynthesisUtterance(message);
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+            utterance.volume = 1.0;
+            
+            synth.speak(utterance);
+        }
+        
+        function formatPrice(price) {
+            if (price > 500) return price.toFixed(0);
+            if (price >= 100) return price.toFixed(1);
+            if (price >= 10) return price.toFixed(2);
+            if (price >= 1) return price.toFixed(3);
+            return price.toFixed(5);
+        }
+        
+        function formatDuration(ms) {
+            const minutes = Math.floor(ms / 60000);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+            
+            if (days > 0) return `${days}d ${hours % 24}h`;
+            if (hours > 0) return `${hours}h ${minutes % 60}m`;
+            return `${minutes}m`;
+        }
+        
+        // ===================================================================
+        // SETTINGS
+        // ===================================================================
+        
+        function openSettings() {
+            document.getElementById('settingsModal').classList.add('active');
+            updateCustomAssetsList();
+        }
+        
+        function closeSettings() {
+            document.getElementById('settingsModal').classList.remove('active');
+        }
+        
+        function saveSettings() {
+            settings = {
+                autoScan: document.getElementById('autoScanEnabled').checked,
+                scanInterval: parseInt(document.getElementById('scanInterval').value),
+                sound: document.getElementById('soundEnabled').checked,
+                voice: document.getElementById('voiceEnabled').checked,
+                quality: document.getElementById('qualityMode').value,
+                positionSize: parseFloat(document.getElementById('positionSize').value)
+            };
+            
+            localStorage.setItem('kh_discoverySettings', JSON.stringify(settings));
+            
+            if (settings.autoScan) {
+                startAutoScan();
+            } else {
+                if (scanInterval) clearInterval(scanInterval);
+            }
+            
+            console.log('⚙️ Settings saved:', settings);
+        }
+        
+        function clearAllData() {
+            if (!confirm('Clear all data? This will delete all positions, discoveries, journal history, and reset the app.')) return;
+            
+            // Clear all localStorage
+            localStorage.removeItem('kh_activePositions');
+            localStorage.removeItem('kh_journal');
+            localStorage.removeItem('kh_customAssets');
+            localStorage.removeItem('kh_discoverySettings');
+            
+            // Reset arrays
+            activePositions = [];
+            discoveries = [];
+            journal = [];
+            
+            // Save clean data
+            localStorage.setItem('kh_activePositions', '[]');
+            localStorage.setItem('kh_journal', '[]');
+            localStorage.setItem('kh_customAssets', '[]');
+            
+            displayPositions();
+            displayJournal();
+            displayDiscoveries();
+            
+            alert('✅ All data cleared! App reset successfully.');
+            
+            console.log('🧹 Data cleared:', {
+                activePositions,
+                journal,
+                discoveries,
+                customAssets
+            });
+        }
+        
+        // ===================================================================
+        // SERVICE WORKER REGISTRATION (PWA) - Optional, non-critical
+        // ===================================================================
+        
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('✅ Service Worker registered (offline mode enabled)'))
+                    .catch(err => console.log('ℹ️ Service Worker not available (online mode only)', err.message));
+            });
+        }
+        
+        // ===================================================================
+        // INITIALIZATION
+        // ===================================================================
+        
+        window.addEventListener('load', () => {
+            console.log('🔍 KhahanA Discovery App Loaded');
+            
+            // Start price updates if there are active positions
+            if (activePositions.length > 0) {
+                startPriceUpdates();
+                displayPositions();
+            }
+            
+            // Display journal summary
+            updateJournalSummary();
+            
+            // Auto-scan on load if enabled
+            if (settings.autoScan) {
+                setTimeout(startScan, 1000);
+            }
+        });
+    </script>
+</body>
+</html>
