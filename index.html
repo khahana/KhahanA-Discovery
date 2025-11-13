@@ -2256,6 +2256,8 @@ async function startScan() {
                                     if (settings.voice) {
                                         announceSignals([signal]);
                                     }
+                                    // Send push notification
+                                    sendPushNotification([signal]);
                                 }
                             }
                         }
@@ -2970,6 +2972,53 @@ async function startScan() {
         // Unlock audio on first user interaction
         document.addEventListener('click', unlockAudio, { once: true });
         document.addEventListener('touchstart', unlockAudio, { once: true });
+        
+        // Request notification permission on first interaction
+        let notificationsEnabled = false;
+        async function requestNotificationPermission() {
+            if ('Notification' in window && Notification.permission === 'default') {
+                const permission = await Notification.requestPermission();
+                notificationsEnabled = permission === 'granted';
+                if (notificationsEnabled) {
+                    console.log('✅ Notifications enabled');
+                }
+            }
+        }
+        
+        // Request on first tap
+        document.addEventListener('click', requestNotificationPermission, { once: true });
+        document.addEventListener('touchstart', requestNotificationPermission, { once: true });
+        
+        // Send push notification
+        function sendPushNotification(signals) {
+            if (!('Notification' in window) || Notification.permission !== 'granted') return;
+            
+            const count = signals.length;
+            const title = `🔔 ${count} Trading Signal${count > 1 ? 's' : ''} Found!`;
+            
+            let body = '';
+            signals.slice(0, 3).forEach(signal => {
+                const action = signal.action === 'LONG' ? '🚀' : '📉';
+                const symbol = signal.symbol.replace('USDT', '');
+                body += `${action} ${symbol} ${signal.action}\n`;
+            });
+            
+            const notification = new Notification(title, {
+                body: body.trim(),
+                icon: '/icon-192.png',
+                badge: '/icon-192.png',
+                tag: 'khahana-signal',
+                renotify: true,
+                requireInteraction: false,
+                silent: false,
+                vibrate: [200, 100, 200]
+            });
+            
+            notification.onclick = () => {
+                window.focus();
+                notification.close();
+            };
+        }
         
         function playSound() {
             const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSl3w/DciDcIE2K+7OqeVBAJTK3n77FfGggzit7xsnAkBSt9zPLaizsICWSy6+ynWBEJSKHg8bllHAU2k9ryzXouBSaAy/DajT0HGWK88+qhThAMUKzl8LVhGgY2j9jyz3kuBSZ/yO/alEEHEly26+uoVRQKRp7f8btqIgUpfcnw2Yw8CBJivezqn1ISCUtq4++1ZRwFN5Ta8s5+LgUlgMnw2osNwgSBy/DdkTwHGGO+7eyeThALUK3l8LVlHAU0j9jxzHsuBSl/yO7alEAHEly16+uoVBQLRZ7f8btoIQUpfsjv25A9BxJjve3qnlIRDEqp5O+yYBoGOJDa8M19MAUkgMfv2pE9BxljvvLsn08QDFCs5fG0ZRsGNpDY8cx8LgYlgcju25I+CAygWe3smFQRDEip5O+xYBkGOY/a0M18MAUkf8jv25E9CBdivuzrnlIRDUqp5O+xYRkGNo/Y8cx6LgYlgcjv3JE9CAygWe3smFURDEip5O+xYRkGOI/a0M18MAUkfsju3JI+CBljvuzrnlIRDUqo5O+xYRkGOI/Z8cx7LgYlgcfu3JI+CBljvuvrnlERDEqo5e+xYBkGOI/Y8s16LgUmgcfv3JI+BxhjvuzrnlERDEqo5e+xYBkGOI/Y8s16LgUmgcfv3JI+BxhjvuzrnlERDEqo5e+xYBkGOI/Y8s16LgUlgcfv3JI+BxhjvuzrnlERDEqo5e+xYBkGOI/Y8s16LgUlgcfv3JI+BxhjvuzrnlERDEqo5e+xYBkGOI/Y8s16LgUlgcfv3JI+BxhjvuzrnlERDEqo5e+xYBkGOI/Y8s16LgUlgcfv3JI+BxhjvuzrnlERDEqo5e+xYBkGOI/Y8s16LgUlgcfv3JI+BxhjvuzrnlERDEqo5e+xYBkGOI/Y8s16LgUlgcfv3JI+BxhjvuzrnlERDEqo5e+xYBkGOI/Y8s16LgUlgcfv3JI+BxhjvuzrnlERDEqo5e+xYBkGOI/Y8s16LgUlgcfv3JI+BxhjvuzrnlERDEqo5e+xYBkGOI/Y8s16LgUlgcfv3JI+BxhjvuzrnlERDEqo5e+xYBkGOI/Y8s16LgUlgcfv3JI+BxhjvuzrnlERDEqo5e+xYBkGOI/Y8s16LgUlgcfv3JI+BxhjvuzrnlERDEqo5e+xYBkGOI/Y8s16LgUlgcfv3JI+BxhjvuzrnlERDEqo5e+xYBkGOI/Y8s16LgUlgcfv3JI+Bxhjvuzrnl');
