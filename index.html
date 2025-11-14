@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -31,17 +33,84 @@
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
         }
+
+        /* CSS Variables for Light and Dark Modes */
+        :root {
+            --bg-gradient-start: #667eea;
+            --bg-gradient-end: #764ba2;
+            --header-bg: rgba(0,0,0,0.3);
+            --card-bg: white;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --text-light: #9ca3af;
+            --border-color: #e5e7eb;
+            --input-bg: #f3f4f6;
+            --input-border: #d1d5db;
+            --modal-bg: white;
+            --overlay-bg: rgba(0,0,0,0.7);
+            --shadow-color: rgba(0,0,0,0.1);
+            --stat-bg: #f9fafb;
+            --divider-color: #e5e7eb;
+            --timing-bg: rgba(255,255,255,0.6);
+            --timing-text: #1f2937;
+            --long-bg-start: #d1fae5;
+            --long-bg-end: #a7f3d0;
+            --long-border: #10b981;
+            --long-text: #065f46;
+            --short-bg-start: #fee2e2;
+            --short-bg-end: #fecaca;
+            --short-border: #ef4444;
+            --short-text: #991b1b;
+            --active-position-bg-start: #ddd6fe;
+            --active-position-bg-end: #c4b5fd;
+            --active-position-border: #6366f1;
+            --active-position-text: #4c1d95;
+        }
+        
+        /* Dark Mode Variables */
+        body.dark-mode {
+            --bg-gradient-start: #1e293b;
+            --bg-gradient-end: #0f172a;
+            --header-bg: rgba(0,0,0,0.6);
+            --card-bg: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-light: #94a3b8;
+            --border-color: #334155;
+            --input-bg: #0f172a;
+            --input-border: #475569;
+            --modal-bg: #1e293b;
+            --overlay-bg: rgba(0,0,0,0.85);
+            --shadow-color: rgba(0,0,0,0.3);
+            --stat-bg: #0f172a;
+            --divider-color: #334155;
+            --timing-bg: rgba(15,23,42,0.8);
+            --timing-text: #f1f5f9;
+            --long-bg-start: #1e293b;
+            --long-bg-end: #1e293b;
+            --long-border: #10b981;
+            --long-text: #f1f5f9;
+            --short-bg-start: #1e293b;
+            --short-bg-end: #1e293b;
+            --short-border: #ef4444;
+            --short-text: #f1f5f9;
+            --active-position-bg-start: #1e293b;
+            --active-position-bg-end: #1e293b;
+            --active-position-border: #818cf8;
+            --active-position-text: #f1f5f9;
+        }
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            transition: background 0.3s ease;
             min-height: 100vh;
             padding-bottom: 80px;
             overflow-x: hidden;
         }
         
         .header {
-            background: rgba(0,0,0,0.3);
+            background: var(--header-bg);
             backdrop-filter: blur(10px);
             padding: 15px 20px;
             color: white;
@@ -61,6 +130,55 @@
         .app-title {
             font-size: 1.5em;
             font-weight: 900;
+        }
+        
+        .header-right {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        /* Dark Mode Toggle Button */
+        .dark-mode-toggle {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.2em;
+        }
+        
+        .dark-mode-toggle:active {
+            transform: scale(0.95);
+        }
+        
+        body.dark-mode .dark-mode-toggle {
+            background: rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,0.4);
+        }
+        
+        .settings-btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.2em;
+            color: white;
+        }
+        
+        .settings-btn:active {
+            transform: scale(0.95);
         }
         
         .badge {
@@ -101,7 +219,7 @@
         }
         
         .tab.active {
-            background: white;
+            background: var(--card-bg);
             color: #667eea;
         }
         
@@ -149,11 +267,11 @@
         }
         
         .discovery-card {
-            background: white;
+            background: var(--card-bg);
             border-radius: 16px;
             padding: 16px;
             margin-bottom: 15px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px var(--shadow-color);
             position: relative;
             animation: slideIn 0.3s ease-out;
         }
@@ -194,7 +312,7 @@
         .symbol {
             font-size: 1.8em;
             font-weight: 900;
-            color: #1f2937;
+            color: var(--text-primary);
         }
         
         .timing {
@@ -203,7 +321,7 @@
             padding: 6px 12px;
             border-radius: 8px;
             background: rgba(255,255,255,0.6);
-            color: #1f2937;
+            color: var(--text-primary);
             margin-top: 5px;
             display: inline-block;
         }
@@ -255,7 +373,7 @@
             border-radius: 50%;
             font-size: 1.2em;
             cursor: pointer;
-            color: #6b7280;
+            color: var(--text-secondary);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -323,7 +441,7 @@
         
         .price-label {
             font-size: 0.7em;
-            color: #6b7280;
+            color: var(--text-secondary);
             font-weight: 600;
             margin-bottom: 4px;
         }
@@ -331,12 +449,12 @@
         .price-value {
             font-size: 1.1em;
             font-weight: 900;
-            color: #1f2937;
+            color: var(--text-primary);
         }
         
         .price-percent {
             font-size: 0.75em;
-            color: #6b7280;
+            color: var(--text-secondary);
             margin-top: 2px;
         }
         
@@ -350,7 +468,7 @@
         
         .pnl-label {
             font-size: 0.8em;
-            color: #6b7280;
+            color: var(--text-secondary);
             margin-bottom: 5px;
             font-weight: 600;
         }
@@ -379,7 +497,7 @@
             justify-content: space-between;
             margin: 12px 0;
             font-size: 0.85em;
-            color: #6b7280;
+            color: var(--text-secondary);
         }
         
         .stat {
@@ -389,12 +507,12 @@
         }
         
         .stat strong {
-            color: #1f2937;
+            color: var(--text-primary);
         }
         
         .reason {
             font-size: 0.8em;
-            color: #6b7280;
+            color: var(--text-secondary);
             font-style: italic;
             margin-top: 10px;
             padding-top: 10px;
@@ -497,11 +615,11 @@
         }
         
         .journal-card {
-            background: white;
+            background: var(--card-bg);
             border-radius: 16px;
             padding: 20px;
             margin-bottom: 15px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px var(--shadow-color);
         }
         
         .journal-header {
@@ -514,7 +632,7 @@
         .journal-symbol {
             font-size: 1.5em;
             font-weight: 900;
-            color: #1f2937;
+            color: var(--text-primary);
         }
         
         .journal-result {
@@ -542,32 +660,32 @@
         }
         
         .journal-stat {
-            background: #f9fafb;
+            background: var(--stat-bg);
             padding: 12px;
             border-radius: 10px;
         }
         
         .journal-stat-label {
             font-size: 0.75em;
-            color: #6b7280;
+            color: var(--text-secondary);
             margin-bottom: 4px;
         }
         
         .journal-stat-value {
             font-size: 1.1em;
             font-weight: 700;
-            color: #1f2937;
+            color: var(--text-primary);
         }
         
         .journal-time {
             font-size: 0.8em;
-            color: #9ca3af;
+            color: var(--text-light);
             text-align: center;
             margin-top: 10px;
         }
         
         .summary-box {
-            background: white;
+            background: var(--card-bg);
             border-radius: 16px;
             padding: 20px;
             margin-bottom: 20px;
@@ -586,7 +704,7 @@
         .summary-value {
             font-size: 2em;
             font-weight: 900;
-            color: #1f2937;
+            color: var(--text-primary);
         }
         
         .summary-value.profit {
@@ -599,7 +717,7 @@
         
         .summary-label {
             font-size: 0.9em;
-            color: #6b7280;
+            color: var(--text-secondary);
             margin-top: 5px;
         }
         
@@ -608,7 +726,7 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: white;
+            background: var(--card-bg);
             padding: 12px 20px;
             padding-bottom: calc(12px + env(safe-area-inset-bottom)); /* iOS safe area */
             box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
@@ -643,13 +761,13 @@
         }
         
         .btn-settings {
-            background: #f3f4f6;
-            color: #1f2937;
+            background: var(--input-bg);
+            color: var(--text-primary);
         }
         
         .btn-settings:active {
             transform: scale(0.98);
-            background: #e5e7eb;
+            background: var(--divider-color);
         }
         
         /* Modal Styles */
@@ -673,7 +791,7 @@
         }
         
         .modal-content {
-            background: white;
+            background: var(--card-bg);
             border-radius: 20px;
             padding: 25px;
             max-width: 500px;
@@ -704,18 +822,18 @@
         .modal-title {
             font-size: 1.5em;
             font-weight: 900;
-            color: #1f2937;
+            color: var(--text-primary);
         }
         
         .modal-close {
-            background: #f3f4f6;
+            background: var(--input-bg);
             border: none;
             width: 36px;
             height: 36px;
             border-radius: 50%;
             font-size: 1.2em;
             cursor: pointer;
-            color: #6b7280;
+            color: var(--text-secondary);
         }
         
         .setting-item {
@@ -724,7 +842,7 @@
         
         .setting-label {
             font-weight: 700;
-            color: #1f2937;
+            color: var(--text-primary);
             margin-bottom: 8px;
             display: block;
         }
@@ -732,7 +850,7 @@
         .setting-input {
             width: 100%;
             padding: 12px;
-            border: 2px solid #e5e7eb;
+            border: 2px solid var(--border-color);
             border-radius: 10px;
             font-size: 1em;
         }
@@ -742,7 +860,7 @@
             align-items: center;
             gap: 10px;
             padding: 15px;
-            background: #f9fafb;
+            background: var(--stat-bg);
             border-radius: 10px;
             cursor: pointer;
         }
@@ -761,7 +879,7 @@
         
         .asset-list-item {
             padding: 14px;
-            background: #f9fafb;
+            background: var(--stat-bg);
             border-radius: 10px;
             margin-bottom: 10px;
             display: flex;
@@ -776,13 +894,13 @@
         
         .asset-name {
             font-weight: 700;
-            color: #1f2937;
+            color: var(--text-primary);
             font-size: 1.05em;
         }
         
         .asset-badge {
-            background: #e5e7eb;
-            color: #6b7280;
+            background: var(--divider-color);
+            color: var(--text-secondary);
             padding: 4px 10px;
             border-radius: 12px;
             font-size: 0.75em;
@@ -797,7 +915,7 @@
         
         .asset-item {
             padding: 12px;
-            background: #f9fafb;
+            background: var(--stat-bg);
             border-radius: 8px;
             margin-bottom: 8px;
             display: flex;
@@ -851,6 +969,1015 @@
             margin-top: 10px;
             font-size: 0.85em;
         }
+
+        
+        /* Dark Mode Text Color Overrides for Colored Cards */
+        .discovery-card.long .symbol,
+        .discovery-card.short .symbol,
+        .discovery-card.active-position .symbol {
+            color: inherit;
+        }
+        
+        body.dark-mode .discovery-card.long .symbol {
+            color: var(--long-text);
+        }
+        
+        body.dark-mode .discovery-card.short .symbol {
+            color: var(--short-text);
+        }
+        
+        body.dark-mode .discovery-card.active-position .symbol {
+            color: var(--active-position-text);
+        }
+        
+        .discovery-card.long .metric-value,
+        .discovery-card.short .metric-value,
+        .discovery-card.active-position .metric-value {
+            color: inherit;
+        }
+        
+        body.dark-mode .discovery-card.long .metric-value {
+            color: var(--long-text);
+        }
+        
+        body.dark-mode .discovery-card.short .metric-value {
+            color: var(--short-text);
+        }
+        
+        body.dark-mode .discovery-card.active-position .metric-value {
+            color: var(--active-position-text);
+        }
+        
+        .discovery-card.long .target-value,
+        .discovery-card.short .target-value,
+        .discovery-card.active-position .target-value {
+            color: inherit;
+        }
+        
+        body.dark-mode .discovery-card.long .target-value {
+            color: var(--long-text);
+        }
+        
+        body.dark-mode .discovery-card.short .target-value {
+            color: var(--short-text);
+        }
+        
+        body.dark-mode .discovery-card.active-position .target-value {
+            color: var(--active-position-text);
+        }
+        
+        /* Tab styling for dark mode */
+        body.dark-mode .tab.active {
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+        
+        body.dark-mode .filter-btn.active {
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+        
+        /* Timing badges in dark mode */
+        body.dark-mode .timing.excellent {
+            background: #d97706;
+            color: #fef3c7;
+        }
+        
+        body.dark-mode .timing.good {
+            background: #2563eb;
+            color: #dbeafe;
+        }
+        
+        body.dark-mode .timing.fair {
+            background: #7c3aed;
+            color: #ede9fe;
+        }
+        
+        /* Metric backgrounds in dark mode */
+        body.dark-mode .metric {
+            background: rgba(0,0,0,0.2);
+        }
+        
+        body.dark-mode .target-box {
+            background: rgba(0,0,0,0.2);
+        }
+        
+        /* Modal and form elements */
+        .modal {
+            background: var(--overlay-bg);
+        }
+        
+        .modal-content {
+            background: var(--modal-bg);
+        }
+        
+        .modal-title {
+            color: var(--text-primary);
+        }
+        
+        .form-label {
+            color: var(--text-primary);
+        }
+        
+        .form-input,
+        .form-select {
+            background: var(--input-bg);
+            color: var(--text-primary);
+            border-color: var(--input-border);
+        }
+        
+        .form-input::placeholder {
+            color: var(--text-light);
+        }
+        
+        .close-btn {
+            color: var(--text-secondary);
+        }
+        
+        .checkbox-group label {
+            color: var(--text-primary);
+        }
+        
+        .settings-section-title {
+            color: var(--text-primary);
+        }
+        
+        .custom-asset-name {
+            color: var(--text-primary);
+        }
+        
+        /* Journal elements */
+        .journal-summary-title {
+            color: var(--text-primary);
+        }
+        
+        .journal-symbol {
+            color: var(--text-primary);
+        }
+        
+        .journal-detail-value {
+            color: var(--text-primary);
+        }
+        
+        /* Empty state */
+        .empty-state-text {
+            color: var(--text-secondary);
+        }
+        
+        /* Stats */
+        .stat-label {
+            color: var(--text-secondary);
+        }
+        
+        .stat-value {
+            color: var(--text-primary);
+        }
+        
+        /* Scan button dark mode */
+        body.dark-mode .scan-button {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+        }
+        
+        /* Bottom bar */
+        .bottom-bar {
+            background: var(--card-bg);
+            box-shadow: 0 -4px 20px var(--shadow-color);
+            border-top: 1px solid var(--border-color);
+        }
+        
+        /* Progress bar */
+        body.dark-mode .progress-fill {
+            background: linear-gradient(90deg, #818cf8 0%, #a78bfa 100%);
+        }
+        
+        /* Info banner */
+        body.dark-mode .info-banner {
+            background: rgba(129, 140, 248, 0.1);
+            border-color: rgba(129, 140, 248, 0.3);
+        }
+        
+        .info-banner-title {
+            color: var(--text-primary);
+        }
+        
+        .info-banner-text {
+            color: var(--text-secondary);
+        }
+        
+        /* Timestamp */
+        .timestamp {
+            color: var(--text-light);
+        }
+        
+        /* Secondary button */
+        .btn-secondary {
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border-color: var(--border-color);
+        }
+        
+        /* Custom asset list */
+        .custom-assets-list {
+            background: var(--input-bg);
+            border-color: var(--input-border);
+        }
+        
+        .custom-asset-item {
+            background: var(--card-bg);
+        }
+        
+        /* Risk indicators in dark mode */
+        body.dark-mode .risk-indicator.low {
+            background: #064e3b;
+            color: #6ee7b7;
+        }
+        
+        body.dark-mode .risk-indicator.medium {
+            background: #7c2d12;
+            color: #fdba74;
+        }
+        
+        body.dark-mode .risk-indicator.high {
+            background: #7f1d1d;
+            color: #fca5a5;
+        }
+        
+
+        /* Dark Mode - Consistent card styling like Journal */
+        body.dark-mode .discovery-card.long,
+        body.dark-mode .discovery-card.short,
+        body.dark-mode .discovery-card.active-position {
+            background: var(--card-bg) !important;
+            border-left: 4px solid var(--long-border);
+        }
+        
+        body.dark-mode .discovery-card.short {
+            border-left-color: var(--short-border);
+        }
+        
+        body.dark-mode .discovery-card.active-position {
+            border-left-color: var(--active-position-border);
+            border: none;
+            border-left: 4px solid var(--active-position-border);
+        }
+        
+        /* All text in dark mode cards should use standard text colors */
+        body.dark-mode .discovery-card .symbol,
+        body.dark-mode .discovery-card .metric-value,
+        body.dark-mode .discovery-card .target-value {
+            color: var(--text-primary) !important;
+        }
+        
+        body.dark-mode .discovery-card .metric-label,
+        body.dark-mode .discovery-card .target-label {
+            color: var(--text-secondary) !important;
+        }
+        
+
+        
+        /* Dark Mode - Assets Tab Consistent Styling */
+        body.dark-mode .asset-list-item {
+            background: var(--card-bg) !important;
+        }
+        
+        body.dark-mode .asset-item {
+            background: var(--card-bg) !important;
+        }
+        
+        body.dark-mode .asset-category-header {
+            background: var(--input-bg) !important;
+            color: var(--text-primary) !important;
+        }
+        
+        body.dark-mode .delete-asset {
+            background: var(--input-bg);
+            color: var(--text-primary);
+        }
+        
+        body.dark-mode .delete-asset:hover {
+            background: #ef4444;
+            color: white;
+        }
+        
+        /* Scrollbar styling for dark mode */
+        body.dark-mode ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        body.dark-mode ::-webkit-scrollbar-track {
+            background: var(--input-bg);
+        }
+        
+        body.dark-mode ::-webkit-scrollbar-thumb {
+            background: var(--input-border);
+            border-radius: 4px;
+        }
+        
+        body.dark-mode ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+
+        
+        /* ===================================================================
+           COMPREHENSIVE DARK MODE - All UI Elements
+           =================================================================== */
+        
+        /* Assets Tab - All Assets Section */
+        body.dark-mode .asset-category-header,
+        body.dark-mode .assets-header,
+        body.dark-mode .all-assets-section {
+            background: var(--input-bg) !important;
+            color: var(--text-primary) !important;
+        }
+        
+        /* Search Input in Assets */
+        body.dark-mode input[type="text"],
+        body.dark-mode input[type="search"],
+        body.dark-mode textarea {
+            background: var(--input-bg) !important;
+            color: var(--text-primary) !important;
+            border-color: var(--input-border) !important;
+        }
+        
+        body.dark-mode input::placeholder {
+            color: var(--text-light) !important;
+        }
+        
+        /* Asset Pills/Buttons */
+        body.dark-mode .asset-pill,
+        body.dark-mode .asset-button {
+            background: var(--input-bg) !important;
+            color: var(--text-primary) !important;
+            border-color: var(--border-color) !important;
+        }
+        
+        body.dark-mode .asset-pill:hover,
+        body.dark-mode .asset-button:hover {
+            background: var(--border-color) !important;
+        }
+        
+        /* Settings Modal - Professional Dark Mode */
+        body.dark-mode .modal {
+            background: var(--overlay-bg) !important;
+        }
+        
+        body.dark-mode .modal-content {
+            background: var(--modal-bg) !important;
+            border: 1px solid var(--border-color);
+        }
+        
+        body.dark-mode .modal-header {
+            border-bottom-color: var(--border-color) !important;
+        }
+        
+        body.dark-mode .modal-title {
+            color: var(--text-primary) !important;
+        }
+        
+        body.dark-mode .modal-close,
+        body.dark-mode .close-btn {
+            color: var(--text-secondary) !important;
+        }
+        
+        body.dark-mode .modal-close:hover,
+        body.dark-mode .close-btn:hover {
+            color: var(--text-primary) !important;
+        }
+        
+        /* Settings Items */
+        body.dark-mode .setting-item {
+            background: transparent !important;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        body.dark-mode .setting-label,
+        body.dark-mode .settings-section-title {
+            color: var(--text-primary) !important;
+        }
+        
+        body.dark-mode .setting-input,
+        body.dark-mode .setting-select,
+        body.dark-mode select,
+        body.dark-mode input[type="number"] {
+            background: var(--input-bg) !important;
+            color: var(--text-primary) !important;
+            border-color: var(--input-border) !important;
+        }
+        
+        /* Checkboxes */
+        body.dark-mode .checkbox-setting {
+            color: var(--text-primary) !important;
+        }
+        
+        body.dark-mode input[type="checkbox"] {
+            accent-color: #667eea;
+        }
+        
+        /* Buttons in Modals */
+        body.dark-mode .btn-primary {
+            background: #667eea !important;
+            color: white !important;
+        }
+        
+        body.dark-mode .btn-close,
+        body.dark-mode .btn-danger {
+            background: #ef4444 !important;
+            color: white !important;
+        }
+        
+        /* Info text in settings */
+        body.dark-mode .setting-item > div[style*="color"] {
+            color: var(--text-secondary) !important;
+        }
+        
+        /* Asset count badges */
+        body.dark-mode .asset-count {
+            color: var(--text-secondary) !important;
+        }
+        
+        /* Summary boxes */
+        body.dark-mode .summary-box,
+        body.dark-mode .summary-stats {
+            background: var(--card-bg) !important;
+            border-color: var(--border-color) !important;
+        }
+        
+        body.dark-mode .summary-label {
+            color: var(--text-secondary) !important;
+        }
+        
+        body.dark-mode .summary-value {
+            color: var(--text-primary) !important;
+        }
+        
+        /* Empty states */
+        body.dark-mode .empty-state {
+            color: var(--text-secondary) !important;
+        }
+        
+        body.dark-mode .empty-text,
+        body.dark-mode .empty-subtext {
+            color: var(--text-secondary) !important;
+        }
+        
+        /* All buttons should be visible */
+        body.dark-mode button {
+            border: none;
+        }
+        
+        body.dark-mode .delete-asset,
+        body.dark-mode .remove-asset-btn {
+            background: rgba(239, 68, 68, 0.2) !important;
+            color: #ef4444 !important;
+        }
+        
+        body.dark-mode .delete-asset:hover,
+        body.dark-mode .remove-asset-btn:hover {
+            background: #ef4444 !important;
+            color: white !important;
+        }
+
+        
+        /* ===================================================================
+           PROFESSIONAL ANALYTICS DASHBOARD STYLES
+           =================================================================== */
+        
+        .analytics-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 8px var(--shadow-color);
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .analytics-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow-color);
+        }
+        
+        .analytics-card-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .analytics-card-value {
+            font-size: 2em;
+            font-weight: 900;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+        
+        .analytics-card-label {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .analytics-section {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px var(--shadow-color);
+            border: 1px solid var(--border-color);
+        }
+        
+        .analytics-section-title {
+            font-size: 1.3em;
+            font-weight: 900;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .analytics-metric-box {
+            background: var(--stat-bg);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .metric-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .metric-icon {
+            font-size: 1.5em;
+        }
+        
+        .metric-title {
+            font-size: 1em;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        
+        .metric-big-number {
+            font-size: 1.8em;
+            font-weight: 900;
+            margin-bottom: 5px;
+        }
+        
+        .metric-small-label {
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+        
+        /* Trade Highlights */
+        .trade-highlight {
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid;
+        }
+        
+        .trade-highlight.best-trade {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(52, 211, 153, 0.1));
+            border-color: #10b981;
+        }
+        
+        .trade-highlight.worst-trade {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(248, 113, 113, 0.1));
+            border-color: #ef4444;
+        }
+        
+        body.dark-mode .trade-highlight.best-trade {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(52, 211, 153, 0.15));
+        }
+        
+        body.dark-mode .trade-highlight.worst-trade {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(248, 113, 113, 0.15));
+        }
+        
+        .trade-highlight-header {
+            font-size: 0.9em;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+        
+        .trade-highlight-symbol {
+            font-size: 1.8em;
+            font-weight: 900;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+        
+        .trade-highlight-value {
+            font-size: 2.2em;
+            font-weight: 900;
+            margin-bottom: 10px;
+        }
+        
+        .trade-highlight-details {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        /* Timeframe Analysis */
+        .timeframe-analysis {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .timeframe-item {
+            background: var(--stat-bg);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .timeframe-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .timeframe-name {
+            font-size: 1.1em;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+        
+        .timeframe-stats {
+            font-size: 0.9em;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        
+        .timeframe-bar-container {
+            background: var(--input-bg);
+            height: 10px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .timeframe-bar {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        
+        /* Heatmap */
+        .heatmap-container {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .heatmap-cell {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: help;
+            transition: transform 0.2s;
+            border: 1px solid var(--border-color);
+        }
+        
+        .heatmap-cell:hover {
+            transform: scale(1.1);
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .heatmap-cell.empty {
+            background: var(--input-bg) !important;
+            opacity: 0.3;
+        }
+        
+        .heatmap-hour {
+            font-size: 0.75em;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        
+        .heatmap-count {
+            font-size: 0.65em;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        
+        .heatmap-legend {
+            text-align: center;
+            padding: 10px;
+            background: var(--stat-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+        
+        /* Day Chart */
+        .day-chart {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            gap: 10px;
+            padding: 20px 0;
+            min-height: 250px;
+        }
+        
+        .day-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .day-bar {
+            width: 100%;
+            max-width: 80px;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.3s ease;
+            cursor: help;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .day-bar:hover {
+            opacity: 0.8;
+            transform: translateY(-5px);
+        }
+        
+        .day-label {
+            font-size: 0.9em;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: center;
+        }
+        
+        .day-stats {
+            text-align: center;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .heatmap-container {
+                grid-template-columns: repeat(6, 1fr);
+                gap: 5px;
+            }
+            
+            .heatmap-hour {
+                font-size: 0.65em;
+            }
+            
+            .heatmap-count {
+                font-size: 0.55em;
+            }
+            
+            .day-chart {
+                gap: 5px;
+            }
+            
+            .day-bar {
+                max-width: 50px;
+            }
+        }
+
+        
+        /* ===================================================================
+           TOAST NOTIFICATIONS
+           =================================================================== */
+        
+        .toast-container {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .toast {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px 20px;
+            min-width: 300px;
+            max-width: 400px;
+            box-shadow: 0 4px 20px var(--shadow-color);
+            border-left: 4px solid #667eea;
+            opacity: 0;
+            transform: translateX(400px);
+            transition: all 0.3s ease;
+        }
+        
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .toast-success {
+            border-left-color: #10b981;
+        }
+        
+        .toast-error {
+            border-left-color: #ef4444;
+        }
+        
+        .toast-warning {
+            border-left-color: #f59e0b;
+        }
+        
+        .toast-title {
+            font-weight: 700;
+            font-size: 1em;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+        
+        .toast-message {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+        }
+        
+        /* ===================================================================
+           ENHANCED POSITION CARDS WITH PARTIAL EXITS
+           =================================================================== */
+        
+        .partial-close-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 15px;
+        }
+        
+        .btn-partial {
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-partial-25 {
+            background: linear-gradient(135deg, #34d399, #10b981);
+            color: white;
+        }
+        
+        .btn-partial-50 {
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            color: white;
+        }
+        
+        .btn-partial-75 {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
+        }
+        
+        .btn-partial-100 {
+            background: linear-gradient(135deg, #f87171, #ef4444);
+            color: white;
+        }
+        
+        .btn-partial:active {
+            transform: scale(0.95);
+        }
+        
+        .position-badge {
+            display: inline-block;
+            background: rgba(99, 102, 241, 0.2);
+            color: #6366f1;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 700;
+            margin-left: 10px;
+        }
+        
+        body.dark-mode .position-badge {
+            background: rgba(129, 140, 248, 0.2);
+            color: #a5b4fc;
+        }
+        
+        /* ===================================================================
+           LOADING STATES
+           =================================================================== */
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--overlay-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        
+        .loading-content {
+            text-align: center;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,255,255,0.2);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        .loading-text {
+            color: white;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+        
+        /* ===================================================================
+           MOBILE OPTIMIZATIONS
+           =================================================================== */
+        
+        @media (max-width: 768px) {
+            .toast-container {
+                right: 10px;
+                left: 10px;
+            }
+            
+            .toast {
+                min-width: auto;
+                max-width: none;
+            }
+            
+            .partial-close-buttons {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .analytics-card {
+                padding: 15px;
+            }
+            
+            .analytics-card-value {
+                font-size: 1.5em;
+            }
+        }
+
+        
+        /* ===================================================================
+           ML/AI INSIGHTS STYLING
+           =================================================================== */
+        
+        .ml-insights {
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .ml-score-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.85em;
+        }
+        
+        .ml-factor {
+            font-size: 0.85em;
+            padding: 6px 10px;
+            background: var(--stat-bg);
+            border-radius: 6px;
+            margin: 4px 0;
+            color: var(--text-secondary);
+        }
+        
+        body.dark-mode .ml-insights {
+            background: rgba(102, 126, 234, 0.15) !important;
+        }
     </style>
 </head>
 <body>
@@ -858,7 +1985,13 @@
     <div class="header">
         <div class="header-top">
             <div class="app-title">🔍 KhahanA Discovery</div>
-            <div class="badge" id="discoveryCount">0</div>
+            <div class="header-right">
+                <button class="dark-mode-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode">
+                    <span id="darkModeIcon">🌙</span>
+                </button>
+                <div class="badge" id="discoveryCount">0</div>
+                <button class="settings-btn" onclick="openSettings()" title="Settings">⚙️</button>
+            </div>
         </div>
         
         <div class="tabs">
@@ -873,6 +2006,9 @@
             </button>
             <button class="tab" onclick="switchTab('journal')">
                 📖 Journal
+            </button>
+            <button class="tab" onclick="switchTab('analytics')">
+                📈 Analytics
             </button>
         </div>
         
@@ -915,19 +2051,19 @@
     
     <!-- Assets Tab -->
     <div class="container tab-content" id="assetsTab">
-        <div style="background: white; border-radius: 16px; padding: 20px; margin-bottom: 20px;">
-            <h3 style="margin-bottom: 15px; color: #1f2937; font-size: 1.2em;">➕ Add Custom Asset</h3>
+        <div style="background: var(--card-bg); border-radius: 16px; padding: 20px; margin-bottom: 20px;">
+            <h3 style="margin-bottom: 15px; color: var(--text-primary); font-size: 1.2em;">➕ Add Custom Asset</h3>
             <div style="display: flex; gap: 10px;">
                 <input type="text" id="customAssetInput" placeholder="e.g., BTCUSDT" 
-                    style="flex: 1; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 1em; text-transform: uppercase;">
+                    style="flex: 1; padding: 12px; border: 2px solid var(--border-color); border-radius: 10px; font-size: 1em; text-transform: uppercase;">
                 <button class="btn btn-take-position" onclick="addAssetFromTab()" style="white-space: nowrap; padding: 12px 20px;">
                     Add
                 </button>
             </div>
         </div>
         
-        <div style="background: white; border-radius: 16px; padding: 20px;">
-            <h3 style="margin-bottom: 15px; color: #1f2937; font-size: 1.2em;">📋 All Assets</h3>
+        <div style="background: var(--card-bg); border-radius: 16px; padding: 20px;">
+            <h3 style="margin-bottom: 15px; color: var(--text-primary); font-size: 1.2em;">📋 All Assets</h3>
             <div style="margin-bottom: 15px; display: flex; gap: 10px;">
                 <button class="filter-btn" style="flex: 1; background: #667eea; color: white; border: none;" onclick="filterAssets('all')">
                     All (<span id="allCount">0</span>)
@@ -971,6 +2107,36 @@
                 <div class="empty-icon">📖</div>
                 <div class="empty-text">No Trade History</div>
                 <div class="empty-subtext">Closed positions will appear here</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Analytics Tab -->
+    <div class="container tab-content" id="analyticsTab">
+        <div class="info-banner" style="margin-bottom: 20px;">
+            <div class="info-banner-title">📊 Performance Analytics</div>
+            <div class="info-banner-text">
+                Analyze your trading performance with detailed metrics. Analytics update automatically as you close trades.
+            </div>
+        </div>
+        
+        <div id="analyticsContent">
+            <!-- Analytics will be loaded here by JavaScript -->
+            <div class="empty-state" style="padding: 60px 20px;">
+                <div class="empty-icon" style="font-size: 4em; margin-bottom: 20px;">📊</div>
+                <div class="empty-text" style="font-size: 1.3em; font-weight: 700; margin-bottom: 10px;">No trading data yet</div>
+                <div class="empty-subtext" style="font-size: 1em; color: var(--text-secondary);">
+                    Close some positions to see your analytics dashboard!
+                </div>
+                <div style="margin-top: 30px; padding: 20px; background: rgba(102, 126, 234, 0.1); border-radius: 12px; border-left: 4px solid #667eea;">
+                    <div style="font-weight: 700; margin-bottom: 10px;">💡 To get started:</div>
+                    <ol style="text-align: left; max-width: 400px; margin: 0 auto; color: var(--text-secondary);">
+                        <li style="margin: 8px 0;">Scan for signals on Discoveries tab</li>
+                        <li style="margin: 8px 0;">Take a position</li>
+                        <li style="margin: 8px 0;">Close the position (use partial exits!)</li>
+                        <li style="margin: 8px 0;">Return here to see your analytics</li>
+                    </ol>
+                </div>
             </div>
         </div>
     </div>
@@ -1056,6 +2222,24 @@
                 <div style="font-size: 0.8em; color: #64748b; margin-top: 5px;">
                     1x-125x (Higher = More risk/reward)
                 </div>
+            </div>
+            
+            <div class="setting-item">
+                <label class="checkbox-setting">
+                    <input type="checkbox" id="darkModeCheckbox" onchange="toggleDarkModeFromSettings()">
+                    <span><strong>🌙 Dark Mode</strong></span>
+                </label>
+            </div>
+            
+
+            <div class="setting-item">
+                <div class="settings-section-title">📤 Export Data</div>
+                <button class="btn btn-primary" onclick="exportToCSV()" style="width: 100%; margin-bottom: 10px;">
+                    📊 Export to CSV
+                </button>
+                <button class="btn btn-primary" onclick="exportToExcel()" style="width: 100%;">
+                    📑 Export to Excel
+                </button>
             </div>
             
             <div class="setting-item">
@@ -1247,7 +2431,7 @@
             'MANAUSDT', 'SANDUSDT', 'BATUSDT', 'ZRXUSDT', 'KNCUSDT',
             
             // Additional Popular
-            'BELUSDT', 'WINGUSDT', 'SUSHIBUSDT', 'SXPUSDT', 'KSMUSDT',
+            'BELUSDT', 'WINGUSDT', 'SUSHIUSDT', 'SXPUSDT', 'KSMUSDT',
             'DGBUSDT', 'GBPUSDT', 'SUSHIUSDT', 'YFIIUSDT', 'KSMUSDT',
             'DIAUSDT', 'RUNEUSDT', 'FIOUSDT', 'UMAUSDT', 'BELUSDT',
             'WINGUSDT', 'UNIUSDT', 'AVAXUSDT', 'HNTUSDT', 'FLMUSDT',
@@ -1365,6 +2549,43 @@
             document.getElementById('soundEnabled').checked = settings.sound;
             document.getElementById('voiceEnabled').checked = settings.voice;
             document.getElementById('scanInterval').value = settings.scanInterval;
+        }
+        
+        // ===================================================================
+        // DARK MODE STATE & FUNCTIONS
+        // ===================================================================
+        
+        let darkMode = localStorage.getItem('kh_darkMode') === 'true';
+        
+        function initializeDarkMode() {
+            if (darkMode) {
+                document.body.classList.add('dark-mode');
+                const icon = document.getElementById('darkModeIcon');
+                if (icon) icon.textContent = '☀️';
+                const checkbox = document.getElementById('darkModeCheckbox');
+                if (checkbox) checkbox.checked = true;
+            } else {
+                document.body.classList.remove('dark-mode');
+                const icon = document.getElementById('darkModeIcon');
+                if (icon) icon.textContent = '🌙';
+                const checkbox = document.getElementById('darkModeCheckbox');
+                if (checkbox) checkbox.checked = false;
+            }
+        }
+        
+        function toggleDarkMode() {
+            darkMode = !darkMode;
+            localStorage.setItem('kh_darkMode', darkMode);
+            initializeDarkMode();
+            console.log('🌙 Dark mode:', darkMode ? 'enabled' : 'disabled');
+        }
+        
+        function toggleDarkModeFromSettings() {
+            const checkbox = document.getElementById('darkModeCheckbox');
+            darkMode = checkbox.checked;
+            localStorage.setItem('kh_darkMode', darkMode);
+            initializeDarkMode();
+            console.log('🌙 Dark mode:', darkMode ? 'enabled' : 'disabled');
         }
         
         // ===================================================================
@@ -2814,11 +4035,12 @@ async function startScan() {
                                 </div>
                             </div>
                             
-                            <div class="action-btns">
-                                <button class="btn btn-close" onclick="closePosition('${pos.id}', 'manual')">
+                            
+                            <div class="action-btns" style="margin-top: 20px;">
+                                <button class="btn btn-close" onclick="closePosition('${pos.id}', 'manual')" style="width: 100%;">
                                     ❌ Close Position
                                 </button>
-                                <button class="btn btn-chart" onclick="openChart('${pos.symbol}')">
+                                <button class="btn btn-chart" onclick="openChart('${pos.symbol}')" style="margin-top: 10px; width: 100%;">
                                     📈 Chart
                                 </button>
                             </div>
@@ -2871,6 +4093,7 @@ async function startScan() {
         }
         
         function displayJournal() {
+            console.log('📖 displayJournal called - journal has', journal.length, 'entries');
             const listContainer = document.getElementById('journalList');
             
             if (journal.length === 0) {
@@ -2885,7 +4108,10 @@ async function startScan() {
                 return;
             }
             
-            listContainer.innerHTML = journal.slice().reverse().map(trade => {
+            listContainer.innerHTML = journal.slice().reverse().filter(trade => {
+                // Filter out trades with NaN P&L
+                return !isNaN(trade.pnl) && trade.pnl !== null && trade.pnl !== undefined;
+            }).map(trade => {
                 const isWin = trade.pnl >= 0;
                 return `
                     <div class="journal-card">
@@ -3001,6 +4227,7 @@ async function startScan() {
             
             // Remove from discoveries
             discoveries = discoveries.filter(d => d.id !== signalId);
+            displayDiscoveries();
             
             console.log('🔄 Switching to positions tab');
             
@@ -3355,6 +4582,12 @@ async function startScan() {
                 document.getElementById('journalTab').classList.add('active');
                 document.getElementById('filterBar').style.display = 'none';
                 displayJournal();
+            } else if (tab === 'analytics') {
+                document.querySelectorAll('.tab')[4].classList.add('active');
+                document.getElementById('analyticsTab').classList.add('active');
+                document.getElementById('filterBar').style.display = 'none';
+                console.log('📈 Switching to analytics tab');
+                displayAnalytics();
             }
         }
         
@@ -3371,7 +4604,8 @@ async function startScan() {
             const container = document.getElementById('assetsList');
             
             let html = `
-                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 16px; margin-bottom: 20px; color: white;">
+                <div style="background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            transition: background 0.3s ease; padding: 20px; border-radius: 16px; margin-bottom: 20px; color: white;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                         <div>
                             <div style="font-size: 1.3em; font-weight: 700; margin-bottom: 5px;">
@@ -3863,19 +5097,843 @@ async function startScan() {
         // ===================================================================
         
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('✅ Service Worker registered (offline mode enabled)'))
-                    .catch(err => console.log('ℹ️ Service Worker not available (online mode only)', err.message));
+    
+        
+        // ===================================================================
+        // EXPORT FEATURES
+        // ===================================================================
+        
+        function exportToCSV() {
+            if (journal.length === 0) {
+                alert('❌ No trades to export yet! Close some positions first.');
+                return;
+            }
+            
+            console.log('📊 Exporting', journal.length, 'trades to CSV...');
+            
+            // CSV Header
+            let csv = 'Date,Time,Symbol,Direction,Entry,Exit,Size,Leverage,P&L ($),Return (%),Duration,Outcome,Timeframe\n';
+            
+            // Add each trade
+            journal.forEach(trade => {
+                const date = new Date(trade.exitTime);
+                const dateStr = date.toLocaleDateString();
+                const timeStr = date.toLocaleTimeString();
+                const duration = formatDuration(trade.duration || 0);
+                
+                csv += `"${dateStr}","${timeStr}",`;
+                csv += `"${trade.symbol}","${trade.direction}",`;
+                csv += `${trade.entryPrice},${trade.exitPrice},`;
+                csv += `${trade.size},${trade.leverage},`;
+                csv += `${trade.pnl.toFixed(2)},${trade.pnlPercent.toFixed(2)},`;
+                csv += `"${duration}","${trade.outcome.toUpperCase()}","${trade.timeframe || 'N/A'}"\n`;
             });
+            
+            // Create download
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            const filename = `khahana-trades-${new Date().toISOString().split('T')[0]}.csv`;
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            console.log('✅ CSV exported:', filename);
+            alert(`✅ Exported ${journal.length} trades to ${filename}!`);
+        }
+        
+        function exportToExcel() {
+            alert('📑 Excel export will be available soon!\n\nFor now, please use CSV export which can be opened in Excel.');
+            // Future: Implement XLSX export with multiple sheets
+        }
+        
+        // ===================================================================
+        // PARTIAL EXITS & POSITION MANAGEMENT
+        // ===================================================================
+        
+        function partialClose(positionId, percentage) {
+            console.log('🔥🔥🔥 PARTIAL CLOSE CALLED!', positionId, percentage);
+            console.log('💰 partialClose called:', positionId, percentage + '%');
+            
+            const position = activePositions.find(p => p.id === positionId);
+            console.log('📊 Found position:', position);
+            
+            if (!position) {
+                console.error('❌ Position not found:', positionId);
+                console.log('Active positions:', activePositions);
+                alert('❌ Position not found!');
+                return;
+            }
+            
+            console.log('📊 Position found:', position.symbol);
+            
+            const closeAmount = (percentage / 100) * position.size;
+            const remainingAmount = position.size - closeAmount;
+            
+            // Calculate P&L properly - with extensive debugging
+            console.log('🔍 Position object:', position);
+            
+            const currentPrice = position.currentPrice || position.entryPrice;
+            const entryPrice = position.entryPrice;
+            const positionSize = position.size || settings.positionSize || 100;
+            const leverage = position.leverage || settings.leverage || 10;
+            const direction = position.action || position.direction || 'LONG';
+            
+            console.log('🔍 Calculation inputs:', {
+                currentPrice,
+                entryPrice,
+                positionSize,
+                leverage,
+                direction,
+                closeAmount,
+                percentage
+            });
+            
+            // Calculate total P&L
+            let totalPnL = 0;
+            if (direction === 'LONG') {
+                totalPnL = (currentPrice - entryPrice) * (positionSize / entryPrice) * leverage;
+                console.log('🔢 LONG calc:', {
+                    diff: currentPrice - entryPrice,
+                    ratio: positionSize / entryPrice,
+                    beforeLeverage: (currentPrice - entryPrice) * (positionSize / entryPrice),
+                    totalPnL
+                });
+            } else if (direction === 'SHORT') {
+                totalPnL = (entryPrice - currentPrice) * (positionSize / entryPrice) * leverage;
+                console.log('🔢 SHORT calc:', {
+                    diff: entryPrice - currentPrice,
+                    ratio: positionSize / entryPrice,
+                    beforeLeverage: (entryPrice - currentPrice) * (positionSize / entryPrice),
+                    totalPnL
+                });
+            }
+            
+            // Calculate portion for this close
+            const pnlPortion = (percentage / 100) * totalPnL;
+            
+            console.log('📊 P&L Calculation FINAL:', {
+                totalPnL: totalPnL,
+                totalPnLFixed: totalPnL.toFixed(4),
+                pnlPortion: pnlPortion,
+                pnlPortionFixed: pnlPortion.toFixed(4),
+                isNaN_total: isNaN(totalPnL),
+                isNaN_portion: isNaN(pnlPortion)
+            });
+            
+            // Safety check
+            if (isNaN(pnlPortion)) {
+                console.error('❌ P&L is NaN! Check values above');
+                alert('Error calculating P&L. Check console for details.');
+                return;
+            }
+            
+            // Create journal entry for closed portion
+            const entryTimestamp = position.openedAt || position.entryTime || Date.now();
+            const exitTimestamp = Date.now();
+            const durationMs = exitTimestamp - entryTimestamp;
+            
+            const journalEntry = {
+                id: Date.now(),
+                symbol: position.symbol,
+                direction: direction,  // Use the direction we already determined
+                action: direction,     // Also set action for compatibility
+                entryPrice: entryPrice,
+                exitPrice: currentPrice,
+                size: closeAmount,
+                leverage: leverage,
+                pnl: pnlPortion,
+                pnlPercent: (pnlPortion / (positionSize * (percentage / 100))) * 100,
+                outcome: pnlPortion >= 0 ? 'win' : 'loss',
+                entryTime: entryTimestamp,
+                exitTime: exitTimestamp,
+                duration: durationMs,
+                timeframe: position.timeframe || '5m',
+                exitType: `Partial ${percentage}%`,
+                partialExit: true
+            };
+            
+            console.log('📅 Journal entry dates:', {
+                entryTime: new Date(entryTimestamp).toISOString(),
+                exitTime: new Date(exitTimestamp).toISOString(),
+                duration: Math.floor(durationMs / 1000) + 's'
+            });
+            
+            console.log('📝 Creating journal entry:', journalEntry);
+            journal.push(journalEntry);
+            console.log('📚 Journal now has', journal.length, 'entries');
+            localStorage.setItem('kh_journal', JSON.stringify(journal));
+            console.log('💾 Saved to localStorage');
+            
+            if (percentage >= 100) {
+                // Full close - remove position
+                activePositions = activePositions.filter(p => p.id !== positionId);
+                console.log('✅ Position fully closed');
+            } else {
+                // Partial close - update position
+                position.size = remainingAmount;
+                position.partialExits = position.partialExits || [];
+                position.partialExits.push({
+                    percentage,
+                    amount: closeAmount,
+                    price: position.currentPrice,
+                    pnl: pnlPortion,
+                    time: Date.now()
+                });
+                console.log(`✅ Closed ${percentage}% of position, ${100-percentage}% remaining`);
+            }
+            
+            localStorage.setItem('kh_activePositions', JSON.stringify(activePositions));
+            
+            displayPositions();
+            updateJournalSummary();
+            
+            // Show notification
+            showNotification(`✅ Closed ${percentage}%`, `P&L: $${pnlPortion.toFixed(2)}`, 'success');
+        }
+        
+        // ===================================================================
+        // TOAST NOTIFICATIONS
+        // ===================================================================
+        
+        function showNotification(title, message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+                <div class="toast-title">${title}</div>
+                <div class="toast-message">${message}</div>
+            `;
+            
+            const container = document.getElementById('toastContainer') || createToastContainer();
+            container.appendChild(toast);
+            
+            // Animate in
+            setTimeout(() => toast.classList.add('show'), 10);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+        
+        function createToastContainer() {
+            const container = document.createElement('div');
+            container.id = 'toastContainer';
+            container.className = 'toast-container';
+            document.body.appendChild(container);
+            return container;
+        }
+        
+        // ===================================================================
+        // ML/AI ENGINE - PATTERN RECOGNITION & SIGNAL SCORING
+        // ===================================================================
+        
+        const MLEngine = {
+            // Pattern Recognition
+            analyzePatterns: function() {
+                if (journal.length < 3) return { patterns: [], confidence: 0 };
+                
+                const winningTrades = journal.filter(t => t.outcome === 'win');
+                if (winningTrades.length === 0) return { patterns: [], confidence: 0 };
+                
+                // Analyze common patterns in winning trades
+                const patterns = {
+                    timeframes: {},
+                    directions: { LONG: 0, SHORT: 0 },
+                    symbols: {},
+                    hours: Array(24).fill(0),
+                    avgDuration: 0
+                };
+                
+                winningTrades.forEach(trade => {
+                    // Timeframe patterns
+                    const tf = trade.timeframe || 'N/A';
+                    patterns.timeframes[tf] = (patterns.timeframes[tf] || 0) + 1;
+                    
+                    // Direction patterns
+                    patterns.directions[trade.direction]++;
+                    
+                    // Symbol patterns
+                    patterns.symbols[trade.symbol] = (patterns.symbols[trade.symbol] || 0) + 1;
+                    
+                    // Hour patterns
+                    const hour = new Date(trade.entryTime || trade.exitTime).getHours();
+                    patterns.hours[hour]++;
+                    
+                    // Duration
+                    patterns.avgDuration += (trade.duration || 0);
+                });
+                
+                patterns.avgDuration /= winningTrades.length;
+                
+                const confidence = Math.min(100, (winningTrades.length / journal.length) * 100);
+                
+                return { patterns, confidence, sampleSize: winningTrades.length };
+            },
+            
+            // Win Probability Calculator
+            calculateWinProbability: function(signal) {
+                if (journal.length < 5) {
+                    return { probability: 50, confidence: 'low', reason: 'Insufficient data (need 5+ trades)' };
+                }
+                
+                let score = 50; // Base probability
+                let factors = [];
+                
+                // Factor 1: Timeframe performance
+                const tfTrades = journal.filter(t => t.timeframe === signal.timeframe);
+                if (tfTrades.length > 0) {
+                    const tfWins = tfTrades.filter(t => t.outcome === 'win').length;
+                    const tfWinRate = (tfWins / tfTrades.length) * 100;
+                    score += (tfWinRate - 50) * 0.3; // 30% weight
+                    factors.push(`Timeframe ${signal.timeframe}: ${tfWinRate.toFixed(0)}% win rate`);
+                }
+                
+                // Factor 2: Direction performance
+                const dirTrades = journal.filter(t => t.direction === signal.action);
+                if (dirTrades.length > 0) {
+                    const dirWins = dirTrades.filter(t => t.outcome === 'win').length;
+                    const dirWinRate = (dirWins / dirTrades.length) * 100;
+                    score += (dirWinRate - 50) * 0.2; // 20% weight
+                    factors.push(`${signal.action} direction: ${dirWinRate.toFixed(0)}% win rate`);
+                }
+                
+                // Factor 3: Symbol performance
+                const symTrades = journal.filter(t => t.symbol === signal.symbol);
+                if (symTrades.length > 0) {
+                    const symWins = symTrades.filter(t => t.outcome === 'win').length;
+                    const symWinRate = (symWins / symTrades.length) * 100;
+                    score += (symWinRate - 50) * 0.25; // 25% weight
+                    factors.push(`${signal.symbol}: ${symWinRate.toFixed(0)}% win rate`);
+                }
+                
+                // Factor 4: Hour of day
+                const currentHour = new Date().getHours();
+                const hourTrades = journal.filter(t => {
+                    const tradeHour = new Date(t.entryTime || t.exitTime).getHours();
+                    return tradeHour === currentHour;
+                });
+                if (hourTrades.length > 0) {
+                    const hourWins = hourTrades.filter(t => t.outcome === 'win').length;
+                    const hourWinRate = (hourWins / hourTrades.length) * 100;
+                    score += (hourWinRate - 50) * 0.25; // 25% weight
+                    factors.push(`Hour ${currentHour}: ${hourWinRate.toFixed(0)}% win rate`);
+                }
+                
+                // Clamp between 0-100
+                score = Math.max(0, Math.min(100, score));
+                
+                // Determine confidence
+                let confidence = 'low';
+                if (journal.length >= 20) confidence = 'medium';
+                if (journal.length >= 50) confidence = 'high';
+                
+                return { 
+                    probability: score, 
+                    confidence, 
+                    factors,
+                    sampleSize: journal.length 
+                };
+            },
+            
+            // Signal Quality Scoring
+            scoreSignalQuality: function(signal) {
+                const winProb = this.calculateWinProbability(signal);
+                const probability = winProb.probability;
+                
+                let quality = 'medium';
+                let color = '#f59e0b'; // yellow
+                let emoji = '⚠️';
+                
+                if (probability >= 65) {
+                    quality = 'high';
+                    color = '#10b981'; // green
+                    emoji = '✅';
+                } else if (probability < 40) {
+                    quality = 'low';
+                    color = '#ef4444'; // red
+                    emoji = '❌';
+                }
+                
+                return {
+                    quality,
+                    score: Math.round(probability),
+                    color,
+                    emoji,
+                    winProb
+                };
+            },
+            
+            // Similar Trade Finder
+            findSimilarTrades: function(signal) {
+                const similar = journal.filter(t => {
+                    let matches = 0;
+                    if (t.symbol === signal.symbol) matches++;
+                    if (t.direction === signal.action) matches++;
+                    if (t.timeframe === signal.timeframe) matches++;
+                    return matches >= 2; // At least 2 criteria match
+                });
+                
+                if (similar.length === 0) return null;
+                
+                const wins = similar.filter(t => t.outcome === 'win').length;
+                const losses = similar.length - wins;
+                const avgPnL = similar.reduce((sum, t) => sum + t.pnl, 0) / similar.length;
+                
+                return {
+                    total: similar.length,
+                    wins,
+                    losses,
+                    winRate: (wins / similar.length * 100).toFixed(0),
+                    avgPnL: avgPnL.toFixed(2),
+                    trades: similar.slice(-5) // Last 5 similar trades
+                };
+            },
+            
+            // Risk Assessment
+            assessRisk: function(signal) {
+                const recentTrades = journal.slice(-10); // Last 10 trades
+                if (recentTrades.length < 3) {
+                    return { risk: 'unknown', message: 'Need more trade history', color: '#94a3b8' };
+                }
+                
+                // Check for losing streak
+                const last5 = journal.slice(-5);
+                const losses = last5.filter(t => t.outcome === 'loss').length;
+                
+                if (losses >= 4) {
+                    return {
+                        risk: 'high',
+                        message: '⚠️ Losing streak detected! Consider reducing position size.',
+                        color: '#ef4444'
+                    };
+                }
+                
+                // Check volatility (based on recent P&L variance)
+                const pnls = recentTrades.map(t => t.pnl);
+                const avgPnL = pnls.reduce((a, b) => a + b, 0) / pnls.length;
+                const variance = pnls.reduce((sum, pnl) => sum + Math.pow(pnl - avgPnL, 2), 0) / pnls.length;
+                const stdDev = Math.sqrt(variance);
+                
+                if (stdDev > avgPnL * 2) {
+                    return {
+                        risk: 'high',
+                        message: '📊 High volatility detected in recent trades.',
+                        color: '#f59e0b'
+                    };
+                }
+                
+                // Check time of day risk
+                const currentHour = new Date().getHours();
+                const hourTrades = journal.filter(t => {
+                    const h = new Date(t.entryTime || t.exitTime).getHours();
+                    return h === currentHour;
+                });
+                
+                if (hourTrades.length >= 3) {
+                    const hourWins = hourTrades.filter(t => t.outcome === 'win').length;
+                    const hourWinRate = (hourWins / hourTrades.length) * 100;
+                    
+                    if (hourWinRate < 30) {
+                        return {
+                            risk: 'medium',
+                            message: `⏰ You historically lose at hour ${currentHour}. Trade carefully.`,
+                            color: '#f59e0b'
+                        };
+                    }
+                }
+                
+                return {
+                    risk: 'low',
+                    message: '✅ Conditions look favorable based on your history.',
+                    color: '#10b981'
+                };
+            }
+        };
+        
+        // Add ML insights to discovery cards
+        function addMLInsights(cardElement, signal) {
+            if (journal.length < 3) return; // Need minimum data
+            
+            const quality = MLEngine.scoreSignalQuality(signal);
+            const similar = MLEngine.findSimilarTrades(signal);
+            const risk = MLEngine.assessRisk(signal);
+            
+            // Create insights container
+            const insightsHTML = `
+                <div class="ml-insights" style="
+                    margin-top: 15px;
+                    padding: 15px;
+                    background: rgba(102, 126, 234, 0.1);
+                    border-radius: 10px;
+                    border-left: 4px solid ${quality.color};
+                ">
+                    <div style="font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between;">
+                        <span>🤖 AI Analysis</span>
+                        <span style="background: ${quality.color}; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.85em;">
+                            ${quality.emoji} ${quality.score}% Win Probability
+                        </span>
+                    </div>
+                    
+                    ${similar ? `
+                        <div style="font-size: 0.9em; color: var(--text-secondary); margin-bottom: 8px;">
+                            📊 Similar trades: <strong>${similar.wins}W / ${similar.losses}L</strong> (${similar.winRate}% win rate)
+                        </div>
+                    ` : ''}
+                    
+                    <div style="font-size: 0.85em; color: var(--text-secondary); padding: 8px; background: var(--card-bg); border-radius: 6px;">
+                        ${risk.message}
+                    </div>
+                    
+                    <div style="margin-top: 10px; font-size: 0.75em; color: var(--text-light);">
+                        Based on ${journal.length} trades • Confidence: ${quality.winProb.confidence}
+                    </div>
+                </div>
+            `;
+            
+            // Insert before action buttons
+            const actionButtons = cardElement.querySelector('.action-btns');
+            if (actionButtons) {
+                actionButtons.insertAdjacentHTML('beforebegin', insightsHTML);
+            }
+        }
+        
+        // ===================================================================
+        // ANALYTICS FUNCTIONS
+        // ===================================================================
+        
+        function displayAnalytics() {
+            console.log('📊 displayAnalytics called');
+            console.log('📊 Journal length:', journal.length);
+            console.log('📊 Journal entries:', journal);
+            
+            const container = document.getElementById('analyticsContent');
+            console.log('📊 Container found:', !!container);
+            
+            if (!container) {
+                console.error('❌ analyticsContent container not found!');
+                return;
+            }
+            
+            console.log('📊 About to check journal length...');
+            console.log('📊 journal variable:', journal);
+            console.log('📊 journal type:', typeof journal);
+            console.log('📊 journal.length:', journal ? journal.length : 'undefined');
+            
+            if (!journal || journal.length === 0) {
+                console.log('📊 Journal is empty, showing empty state');
+                container.innerHTML += `<div style="padding: 20px; background: yellow; color: black; margin: 20px;">
+                    DEBUG: Journal length = ${journal ? journal.length : 'undefined'}<br>
+                    Journal type = ${typeof journal}<br>
+                    <button onclick="console.log(journal); alert('Check console')">Show Journal in Console</button>
+                </div>`;
+                container.innerHTML = `
+                    <div class="empty-state" style="padding: 60px 20px;">
+                        <div class="empty-icon" style="font-size: 4em;">📊</div>
+                        <div class="empty-text" style="font-size: 1.3em; margin: 20px 0;">No trading data yet</div>
+                        <div class="empty-subtext">Close some positions to see analytics!</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Calculate metrics
+            const wins = journal.filter(t => t.outcome === 'win').length;
+            const losses = journal.length - wins;
+            const winRate = (wins / journal.length * 100).toFixed(1);
+            const totalPnL = journal.reduce((sum, t) => sum + (t.pnl || 0), 0);
+            
+            // Calculate more metrics
+            const avgWin = wins > 0 ? journal.filter(t => t.outcome === 'win').reduce((sum, t) => sum + (t.pnl || 0), 0) / wins : 0;
+            const avgLoss = losses > 0 ? Math.abs(journal.filter(t => t.outcome === 'loss').reduce((sum, t) => sum + (t.pnl || 0), 0) / losses) : 0;
+            const profitFactor = avgLoss > 0 ? (avgWin * wins) / (avgLoss * losses) : 0;
+            
+            // Best and worst trades
+            const sortedByPnL = [...journal].sort((a, b) => (b.pnl || 0) - (a.pnl || 0));
+            const bestTrade = sortedByPnL[0];
+            const worstTrade = sortedByPnL[sortedByPnL.length - 1];
+            
+            // Hour of day analysis
+            const hourStats = [];
+            for (let i = 0; i < 24; i++) {
+                hourStats.push({ total: 0, pnl: 0, wins: 0 });
+            }
+            
+            journal.forEach(t => {
+                if (!t.exitTime) return;
+                const hour = new Date(t.exitTime).getHours();
+                if (hour >= 0 && hour < 24) {
+                    hourStats[hour].total++;
+                    hourStats[hour].pnl += (t.pnl || 0);
+                    if (t.outcome === 'win') hourStats[hour].wins++;
+                }
+            });
+            
+            console.log('📊 Hour stats:', hourStats);
+            
+            container.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px;">
+                    <div class="analytics-card">
+                        <div class="analytics-card-icon">📈</div>
+                        <div class="analytics-card-value">${journal.length}</div>
+                        <div class="analytics-card-label">Total Trades</div>
+                    </div>
+                    <div class="analytics-card">
+                        <div class="analytics-card-icon">${parseFloat(winRate) >= 50 ? '✅' : '⚠️'}</div>
+                        <div class="analytics-card-value ${parseFloat(winRate) >= 50 ? 'positive' : 'negative'}">${winRate}%</div>
+                        <div class="analytics-card-label">Win Rate</div>
+                    </div>
+                    <div class="analytics-card">
+                        <div class="analytics-card-icon">${totalPnL >= 0 ? '💰' : '📉'}</div>
+                        <div class="analytics-card-value ${totalPnL >= 0 ? 'positive' : 'negative'}">${totalPnL >= 0 ? '+' : ''}$${totalPnL.toFixed(2)}</div>
+                        <div class="analytics-card-label">Total P&L</div>
+                    </div>
+                    <div class="analytics-card">
+                        <div class="analytics-card-icon">⚖️</div>
+                        <div class="analytics-card-value ${profitFactor >= 1.5 ? 'positive' : profitFactor >= 1 ? '' : 'negative'}">${profitFactor.toFixed(2)}</div>
+                        <div class="analytics-card-label">Profit Factor</div>
+                    </div>
+                </div>
+                
+                <div class="analytics-section" style="margin-bottom: 25px;">
+                    <h3 class="analytics-section-title">🏆 Best & Worst Trades</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="trade-highlight best-trade">
+                            <div class="trade-highlight-header">🥇 Best Trade</div>
+                            <div class="trade-highlight-symbol">${bestTrade.symbol}</div>
+                            <div class="trade-highlight-value positive">+$${(bestTrade.pnl || 0).toFixed(2)}</div>
+                        </div>
+                        <div class="trade-highlight worst-trade">
+                            <div class="trade-highlight-header">📉 Worst Trade</div>
+                            <div class="trade-highlight-symbol">${worstTrade.symbol}</div>
+                            <div class="trade-highlight-value negative">$${(worstTrade.pnl || 0).toFixed(2)}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analytics-section">
+                    <h3 class="analytics-section-title">🕐 Hour of Day Heatmap (Your Local Time)</h3>
+                    <div class="heatmap-container">
+                        ${hourStats.map((stat, hour) => {
+                            if (!stat || stat.total === 0) return `<div class="heatmap-cell empty" title="Hour ${hour}: No trades"></div>`;
+                            const intensity = Math.min(100, (stat.total / journal.length) * 500);
+                            const isProfit = stat.pnl > 0;
+                            const color = isProfit ? `rgba(16, 185, 129, ${intensity/100})` : `rgba(239, 68, 68, ${intensity/100})`;
+                            const winRate = ((stat.wins / stat.total) * 100).toFixed(0);
+                            return `
+                                <div class="heatmap-cell" style="background: ${color};" 
+                                     title="Hour ${hour}:00 - ${stat.total} trades - ${winRate}% wins - $${stat.pnl.toFixed(2)}">
+                                    <div class="heatmap-hour">${hour}</div>
+                                    <div class="heatmap-count">${stat.total}</div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                    <div class="heatmap-legend">
+                        <span style="color: var(--text-secondary); font-size: 0.85em;">
+                            💡 Darker = More trades • Green = Profitable • Red = Loss
+                        </span>
+                    </div>
+                </div>
+            `;
+            
+            console.log('✅ Analytics displayed');
         }
         
         // ===================================================================
         // INITIALIZATION
         // ===================================================================
+        }
+        
+        // ===================================================================
+        // EXPORT FEATURES
+        // ===================================================================
+        
+        function exportToCSV() {
+            if (journal.length === 0) {
+                alert('❌ No trades to export yet! Close some positions first.');
+                return;
+            }
+            
+            console.log('📊 Exporting', journal.length, 'trades to CSV...');
+            
+            // CSV Header
+            let csv = 'Date,Time,Symbol,Direction,Entry,Exit,Size,Leverage,P&L ($),Return (%),Duration,Outcome,Timeframe\n';
+            
+            // Add each trade
+            journal.forEach(trade => {
+                const date = new Date(trade.exitTime);
+                const dateStr = date.toLocaleDateString();
+                const timeStr = date.toLocaleTimeString();
+                const duration = formatDuration(trade.duration || 0);
+                
+                csv += `"${dateStr}","${timeStr}",`;
+                csv += `"${trade.symbol}","${trade.direction}",`;
+                csv += `${trade.entryPrice},${trade.exitPrice},`;
+                csv += `${trade.size},${trade.leverage},`;
+                csv += `${trade.pnl.toFixed(2)},${trade.pnlPercent.toFixed(2)},`;
+                csv += `"${duration}","${trade.outcome.toUpperCase()}","${trade.timeframe || 'N/A'}"\n`;
+            });
+            
+            // Create download
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            const filename = `khahana-trades-${new Date().toISOString().split('T')[0]}.csv`;
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            console.log('✅ CSV exported:', filename);
+            alert(`✅ Exported ${journal.length} trades to ${filename}!`);
+        }
+        
+        function exportToExcel() {
+            alert('📑 Excel export will be available soon!\n\nFor now, please use CSV export which can be opened in Excel.');
+            // Future: Implement XLSX export with multiple sheets
+        }
+        
+        // ===================================================================
+        // ANALYTICS FUNCTIONS
+        // ===================================================================
+        
+        function displayAnalytics() {
+            console.log('📊 displayAnalytics() called');
+            console.log('📊 Journal length:', journal.length);
+            console.log('📊 Journal entries:', journal);
+            console.log('📊 Sample entries:', journal.slice(0, 3));
+            
+            const container = document.getElementById('analyticsContent');
+            console.log('📊 Container:', container);
+            
+            // Filter valid entries (not NaN)
+            const validEntries = journal.filter(t => {
+                const hasValidPnL = !isNaN(t.pnl) && t.pnl !== null && t.pnl !== undefined;
+                return hasValidPnL;
+            });
+            console.log('📊 Valid entries (non-NaN):', validEntries.length);
+            console.log('📊 Will show analytics:', validEntries.length > 0);
+            
+            // If we have ANY journal entries, try to display something
+            if (journal.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📊</div>
+                        <div class="empty-state-text">No trading data yet. Close some positions to see your analytics!</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Calculate metrics
+            const totalTrades = journal.length;
+            const wins = journal.filter(t => t.outcome === 'win').length;
+            const losses = journal.filter(t => t.outcome === 'loss').length;
+            const winRate = (wins / totalTrades * 100).toFixed(1);
+            const totalPnL = journal.reduce((sum, t) => sum + t.pnl, 0);
+            const avgWin = wins > 0 ? journal.filter(t => t.outcome === 'win').reduce((sum, t) => sum + t.pnl, 0) / wins : 0;
+            const avgLoss = losses > 0 ? Math.abs(journal.filter(t => t.outcome === 'loss').reduce((sum, t) => sum + t.pnl, 0) / losses) : 0;
+            const profitFactor = avgLoss > 0 ? (avgWin * wins) / (avgLoss * losses) : 0;
+            
+            // Best and worst trades
+            const sortedByPnL = [...journal].sort((a, b) => b.pnl - a.pnl);
+            const bestTrade = sortedByPnL[0];
+            const worstTrade = sortedByPnL[sortedByPnL.length - 1];
+            
+            // Win rate by timeframe
+            const timeframes = {};
+            journal.forEach(t => {
+                const tf = t.timeframe || 'N/A';
+                if (!timeframes[tf]) timeframes[tf] = { wins: 0, total: 0 };
+                timeframes[tf].total++;
+                if (t.outcome === 'win') timeframes[tf].wins++;
+            });
+            
+            container.innerHTML = `
+                <div class="stats-row">
+                    <div class="stat-box">
+                        <div class="stat-label">Total Trades</div>
+                        <div class="stat-value">${totalTrades}</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Win Rate</div>
+                        <div class="stat-value ${parseFloat(winRate) >= 50 ? 'positive' : 'negative'}">${winRate}%</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Total P&L</div>
+                        <div class="stat-value ${totalPnL >= 0 ? 'positive' : 'negative'}">$${totalPnL.toFixed(2)}</div>
+                    </div>
+                </div>
+                
+                <div class="divider"></div>
+                
+                <div class="stats-row">
+                    <div class="stat-box">
+                        <div class="stat-label">Avg Win</div>
+                        <div class="stat-value positive">+$${avgWin.toFixed(2)}</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Avg Loss</div>
+                        <div class="stat-value negative">-$${avgLoss.toFixed(2)}</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Profit Factor</div>
+                        <div class="stat-value ${profitFactor >= 1.5 ? 'positive' : profitFactor >= 1 ? '' : 'negative'}">${profitFactor.toFixed(2)}</div>
+                    </div>
+                </div>
+                
+                <div class="divider"></div>
+                
+                <div style="background: var(--card-bg); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                    <h3 style="color: var(--text-primary); margin-bottom: 15px; font-size: 1.2em;">🏆 Best & Worst Trades</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div style="background: rgba(16, 185, 129, 0.1); padding: 12px; border-radius: 8px; border-left: 4px solid #10b981;">
+                            <div style="color: var(--text-secondary); font-size: 0.85em; margin-bottom: 5px;">Best Trade</div>
+                            <div style="color: var(--text-primary); font-weight: 700; font-size: 1.1em;">${bestTrade.symbol}</div>
+                            <div style="color: #10b981; font-weight: 700; font-size: 1.3em;">+$${bestTrade.pnl.toFixed(2)}</div>
+                        </div>
+                        <div style="background: rgba(239, 68, 68, 0.1); padding: 12px; border-radius: 8px; border-left: 4px solid #ef4444;">
+                            <div style="color: var(--text-secondary); font-size: 0.85em; margin-bottom: 5px;">Worst Trade</div>
+                            <div style="color: var(--text-primary); font-weight: 700; font-size: 1.1em;">${worstTrade.symbol}</div>
+                            <div style="color: #ef4444; font-weight: 700; font-size: 1.3em;">$${worstTrade.pnl.toFixed(2)}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="background: var(--card-bg); padding: 20px; border-radius: 12px;">
+                    <h3 style="color: var(--text-primary); margin-bottom: 15px; font-size: 1.2em;">⏱️ Win Rate by Timeframe</h3>
+                    ${Object.entries(timeframes).map(([tf, data]) => {
+                        const tfWinRate = (data.wins / data.total * 100).toFixed(0);
+                        return `
+                            <div style="margin-bottom: 12px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                    <span style="color: var(--text-primary); font-weight: 600;">${tf}</span>
+                                    <span style="color: var(--text-secondary); font-weight: 600;">${data.wins}/${data.total} (${tfWinRate}%)</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${tfWinRate}%"></div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
         
         window.addEventListener('load', () => {
             console.log('🔍 KhahanA Discovery App Loaded');
+            
+            // Initialize dark mode on app load
+            initializeDarkMode();
             
             // Start price updates if there are active positions
             if (activePositions.length > 0) {
@@ -3894,4 +5952,3 @@ async function startScan() {
     </script>
 </body>
 </html>
-
