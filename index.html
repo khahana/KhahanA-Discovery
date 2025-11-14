@@ -1183,7 +1183,7 @@
         // DEFAULT ASSETS - Top 200 Binance USDT Pairs
         // ===================================================================
         
-        // All available crypto assets (300+ coins)
+        // All available crypto assets - BINANCE USDT PERPETUAL FUTURES ONLY
         const ALL_CRYPTO_ASSETS = [
             // Major Coins
             'BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'SOLUSDT', 'XRPUSDT',
@@ -1205,13 +1205,13 @@
             'CAKEUSDT', 'CVXUSDT', 'GMXUSDT', 'DYDXUSDT', 'RDNTUSDT',
             '1INCHUSDT', 'ALPHAUSDT', 'BADGERUSDT', 'RPLUSDT',
             
-            // Metaverse & Gaming
+            // Metaverse & Gaming (Perpetuals)
             'SANDUSDT', 'MANAUSDT', 'AXSUSDT', 'THETAUSDT', 'ENJUSDT',
-            'GALAUSDT', 'APEUSDT', 'GMTUSDT', 'GALUSDT', 'JASMYUSDT',
-            'LOOMUSDT', 'MAGICUSDT', 'ILVUSDT', 'TLMUSDT', 'YGGUSDT',
-            'GHSTUSDT', 'SFPUSDT', 'C98USDT', 'PERPUSDT', 'RAREUSDT',
+            'GALAUSDT', 'APEUSDT', 'GMTUSDT', 'JASMYUSDT', 'MAGICUSDT',
+            'LOOMUSDT', 'ILVUSDT', 'TLMUSDT', 'YGGUSDT', 'SFPUSDT',
+            'GHSTUSDT', 'C98USDT', 'PERPUSDT', 'RAREUSDT', 'ASTRUSDT',
             'VOXELUSDT', 'STARUSDT', 'AGLDUSDT', 'FIDAUSDT', 'BLURUSDT',
-            'BICOUSDT', 'ASTRUSDT', 'OGUSDT', 'POLYUSDT', 'CHZUSDT',
+            'BICOUSDT', 'OGUSDT', 'POLYUSDT', 'CHZUSDT',
             
             // AI & Data
             'RENDERUSDT', 'FETUSDT', 'AGIXUSDT', 'OCEUSDT', 'PHBUSDT',
@@ -1260,25 +1260,25 @@
             'FISUSDT', 'ORNUSDT', 'UTUSDT', 'XVSUSDT', 'ALPHAUSDT',
             'VIDTUSDT', 'AUCTIONUSDT', 'PNTUSDT', 'BONDUSDT', 'MLNUSDT',
             
-            // Newer Additions
+            // Newer Additions (Perpetuals)
             'CLVUSDT', 'YGGUSDT', 'ALICEUSDT', 'AUDIOUSDT', 'C98USDT',
             'MASKUSDT', 'PERPUSDT', 'RAREUSDT', 'LAZIOUSDT', 'CHESSUSDT',
             'ADXUSDT', 'AUCTIONUSDT', 'DARUSDT', 'BNXUSDT', 'RGTUSDT',
-            'MOVRUSDT', 'CITYUSDT', 'ENSUSDT', 'JASMYUSDT', 'AMPUSDT',
-            'PLAUSDT', 'PYRUSDT', 'RARIUSDT', 'ALCXUSDT', 'SANTOSUSDT',
-            'MCUSDT', 'BIFIUSDT', 'PORTOUSDT', 'ERNUSDT', 'ALPACAUSDT',
+            'MOVRUSDT', 'ENSUSDT', 'JASMYUSDT', 'AMPUSDT', 'ERNUSDT',
+            'PLAUSDT', 'PYRUSDT', 'RARIUSDT', 'ALCXUSDT', 'ALPACAUSDT',
+            'MCUSDT', 'BIFIUSDT',
             
-            // Additional Tokens
+            // Additional Tokens (Perpetuals Only)
             'FORTHUSDT', 'EASUSDT', 'TKONUSDT', 'STRAXUSDT', 'UNFIUSDT',
             'FRONTUSDT', 'CVPUSDT', 'AGLDUSDT', 'RADUSDT', 'BETAUSDT',
-            'PSGUSDT', 'DEXEUSDT', 'CLVUSDT', 'QNTUSDT', 'FLOWUSDT',
+            'DEXEUSDT', 'CLVUSDT', 'QNTUSDT', 'FLOWUSDT', 'TOMOUSDT',
             'MINAUSDT', 'RAYUSDT', 'FARMUSDT', 'REQUSDT', 'GHSTUSDT',
             'WAXPUSDT', 'GNOUSDT', 'XECUSDT', 'ELFUSDT', 'DYDXUSDT',
             'POLYUSDT', 'IDEXUSDT', 'VIDTUSDT', 'USDPUSDT', 'TVKUSDT',
             'VGXUSDT', 'GALAUSDT', 'ILVUSDT', 'YGGUSDT', 'SYSUSDT',
             'DFUSDT', 'FIDAUSDT', 'AGLDUSDT', 'RADUSDT', 'UNIUSDT',
             'ELFUSDT', 'BAKEUSDT', 'COSUSDT', 'MTLUSDT', 'OGNUSDT',
-            'NKNUSDT', 'SCRTUSDT', 'JUVUSDT', 'PSGUSDT', 'CITYUSDT'
+            'NKNUSDT', 'SCRTUSDT'
         ];
         
         // Default favorites (BTC and ETH to start)
@@ -1429,8 +1429,8 @@
                     return priceCache.get(symbol);
                 }
                 
-                // Fallback: Get from ticker
-                const url = `https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`;
+                // CRITICAL: Get from FUTURES API (perpetual contracts, not spot)
+                const url = `https://fapi.binance.com/fapi/v1/ticker/price?symbol=${symbol}`;
                 const response = await fetch(url);
                 
                 if (!response.ok) {
@@ -1440,9 +1440,10 @@
                 const data = await response.json();
                 const price = parseFloat(data.price);
                 priceCache.set(symbol, price);
+                console.log(`📊 FUTURES price for ${symbol}: $${price}`);
                 return price;
             } catch (err) {
-                console.error(`❌ ${symbol} price: ${err.message}`);
+                console.error(`❌ ${symbol} futures price: ${err.message}`);
                 return null;
             }
         }
@@ -1451,10 +1452,11 @@
         function subscribeToPriceUpdates(symbols) {
             if (!symbols || symbols.length === 0) return;
             
+            // CRITICAL: Use FUTURES WebSocket for perpetual contracts
             const streams = symbols.map(s => `${s.toLowerCase()}@ticker`).join('/');
-            const wsUrl = `wss://stream.binance.com:9443/stream?streams=${streams}`;
+            const wsUrl = `wss://fstream.binance.com/stream?streams=${streams}`;
             
-            console.log('🔌 Connecting WebSocket to:', streams);
+            console.log('🔌 Connecting to FUTURES WebSocket:', streams);
             
             const ws = new WebSocket(wsUrl);
             let pingInterval = null;
@@ -3020,7 +3022,25 @@ async function startScan() {
                 return;
             }
             
-            const newSL = prompt(`Edit Stop Loss for ${position.symbol}\n\nCurrent SL: $${currentSL.toFixed(4)}\n\nEnter new Stop Loss price:`, currentSL.toFixed(4));
+            // Calculate what PnL would be at current SL (loss)
+            const leverage = settings.leverage || 10;
+            let currentSLPnL, currentSLPercent;
+            if (position.action === 'LONG') {
+                currentSLPnL = (currentSL - position.entryPrice) * (settings.positionSize / position.entryPrice) * leverage;
+                currentSLPercent = ((currentSL - position.entryPrice) / position.entryPrice) * 100 * leverage;
+            } else {
+                currentSLPnL = (position.entryPrice - currentSL) * (settings.positionSize / position.entryPrice) * leverage;
+                currentSLPercent = ((position.entryPrice - currentSL) / position.entryPrice) * 100 * leverage;
+            }
+            
+            const newSL = prompt(
+                `Edit Stop Loss for ${position.symbol}\n\n` +
+                `Entry: $${position.entryPrice.toFixed(4)}\n` +
+                `Current SL: $${currentSL.toFixed(4)}\n` +
+                `📊 Loss at current SL: ${currentSLPnL >= 0 ? '+' : ''}$${currentSLPnL.toFixed(2)} (${currentSLPercent >= 0 ? '+' : ''}${currentSLPercent.toFixed(2)}%)\n\n` +
+                `Enter new Stop Loss price:`, 
+                currentSL.toFixed(4)
+            );
             
             if (newSL === null) return; // User cancelled
             
@@ -3030,14 +3050,30 @@ async function startScan() {
                 return;
             }
             
+            // Calculate PnL at NEW SL
+            let newSLPnL, newSLPercent;
+            if (position.action === 'LONG') {
+                newSLPnL = (slPrice - position.entryPrice) * (settings.positionSize / position.entryPrice) * leverage;
+                newSLPercent = ((slPrice - position.entryPrice) / position.entryPrice) * 100 * leverage;
+            } else {
+                newSLPnL = (position.entryPrice - slPrice) * (settings.positionSize / position.entryPrice) * leverage;
+                newSLPercent = ((position.entryPrice - slPrice) / position.entryPrice) * 100 * leverage;
+            }
+            
+            // Show preview of new PnL
+            const preview = `New SL: $${slPrice.toFixed(4)}\n📊 Loss at new SL: ${newSLPnL >= 0 ? '+' : ''}$${newSLPnL.toFixed(2)} (${newSLPercent >= 0 ? '+' : ''}${newSLPercent.toFixed(2)}%)\n\nConfirm change?`;
+            
             // Validation: SL should be below entry for LONG, above entry for SHORT
             if (position.action === 'LONG' && slPrice >= position.entryPrice) {
-                if (!confirm('⚠️ Warning: Stop Loss is above entry price for LONG position.\n\nThis means you will have a profit if SL hits.\n\nContinue?')) {
+                if (!confirm(`⚠️ Warning: Stop Loss is above entry price for LONG position.\n\n${preview}`)) {
                     return;
                 }
-            }
-            if (position.action === 'SHORT' && slPrice <= position.entryPrice) {
-                if (!confirm('⚠️ Warning: Stop Loss is below entry price for SHORT position.\n\nThis means you will have a profit if SL hits.\n\nContinue?')) {
+            } else if (position.action === 'SHORT' && slPrice <= position.entryPrice) {
+                if (!confirm(`⚠️ Warning: Stop Loss is below entry price for SHORT position.\n\n${preview}`)) {
+                    return;
+                }
+            } else {
+                if (!confirm(preview)) {
                     return;
                 }
             }
@@ -3060,7 +3096,25 @@ async function startScan() {
                 return;
             }
             
-            const newTP = prompt(`Edit Take Profit for ${position.symbol}\n\nCurrent TP: $${currentTP.toFixed(4)}\n\nEnter new Take Profit price:`, currentTP.toFixed(4));
+            // Calculate what PnL would be at current TP
+            const leverage = settings.leverage || 10;
+            let currentTPPnL, currentTPPercent;
+            if (position.action === 'LONG') {
+                currentTPPnL = (currentTP - position.entryPrice) * (settings.positionSize / position.entryPrice) * leverage;
+                currentTPPercent = ((currentTP - position.entryPrice) / position.entryPrice) * 100 * leverage;
+            } else {
+                currentTPPnL = (position.entryPrice - currentTP) * (settings.positionSize / position.entryPrice) * leverage;
+                currentTPPercent = ((position.entryPrice - currentTP) / position.entryPrice) * 100 * leverage;
+            }
+            
+            const newTP = prompt(
+                `Edit Take Profit for ${position.symbol}\n\n` +
+                `Entry: $${position.entryPrice.toFixed(4)}\n` +
+                `Current TP: $${currentTP.toFixed(4)}\n` +
+                `📊 PnL at current TP: ${currentTPPnL >= 0 ? '+' : ''}$${currentTPPnL.toFixed(2)} (${currentTPPercent >= 0 ? '+' : ''}${currentTPPercent.toFixed(2)}%)\n\n` +
+                `Enter new Take Profit price:`, 
+                currentTP.toFixed(4)
+            );
             
             if (newTP === null) return; // User cancelled
             
@@ -3070,14 +3124,30 @@ async function startScan() {
                 return;
             }
             
+            // Calculate PnL at NEW TP
+            let newTPPnL, newTPPercent;
+            if (position.action === 'LONG') {
+                newTPPnL = (tpPrice - position.entryPrice) * (settings.positionSize / position.entryPrice) * leverage;
+                newTPPercent = ((tpPrice - position.entryPrice) / position.entryPrice) * 100 * leverage;
+            } else {
+                newTPPnL = (position.entryPrice - tpPrice) * (settings.positionSize / position.entryPrice) * leverage;
+                newTPPercent = ((position.entryPrice - tpPrice) / position.entryPrice) * 100 * leverage;
+            }
+            
+            // Show preview of new PnL
+            const preview = `New TP: $${tpPrice.toFixed(4)}\n📊 PnL at new TP: ${newTPPnL >= 0 ? '+' : ''}$${newTPPnL.toFixed(2)} (${newTPPercent >= 0 ? '+' : ''}${newTPPercent.toFixed(2)}%)\n\nConfirm change?`;
+            
             // Validation: TP should be above entry for LONG, below entry for SHORT
             if (position.action === 'LONG' && tpPrice <= position.entryPrice) {
-                if (!confirm('⚠️ Warning: Take Profit is below entry price for LONG position.\n\nThis means you will have a loss if TP hits.\n\nContinue?')) {
+                if (!confirm(`⚠️ Warning: Take Profit is below entry price for LONG position.\n\n${preview}`)) {
                     return;
                 }
-            }
-            if (position.action === 'SHORT' && tpPrice >= position.entryPrice) {
-                if (!confirm('⚠️ Warning: Take Profit is above entry price for SHORT position.\n\nThis means you will have a loss if TP hits.\n\nContinue?')) {
+            } else if (position.action === 'SHORT' && tpPrice >= position.entryPrice) {
+                if (!confirm(`⚠️ Warning: Take Profit is above entry price for SHORT position.\n\n${preview}`)) {
+                    return;
+                }
+            } else {
+                if (!confirm(preview)) {
                     return;
                 }
             }
@@ -3824,3 +3894,4 @@ async function startScan() {
     </script>
 </body>
 </html>
+
