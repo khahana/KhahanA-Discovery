@@ -1007,8 +1007,28 @@
             </div>
             
             <div class="setting-item">
+                <label class="setting-label">🎯 Exit Strategy (TP/SL)</label>
+                <select class="setting-input" id="exitStrategy" onchange="saveSettings()">
+                    <option value="conservative">🛡️ Conservative (Tight SL, Small TP)</option>
+                    <option value="moderate" selected>⚖️ Moderate (Balanced)</option>
+                    <option value="aggressive">⚡ Aggressive (Wide SL, Big TP)</option>
+                </select>
+                <div style="font-size: 0.8em; color: #64748b; margin-top: 5px;">
+                    Controls Take Profit and Stop Loss distances
+                </div>
+            </div>
+            
+            <div class="setting-item">
                 <label class="setting-label">💰 Position Size ($)</label>
-                <input type="number" class="setting-input" id="positionSize" value="1000" min="10" step="10" onchange="saveSettings()">
+                <input type="number" class="setting-input" id="positionSize" value="100" min="10" step="10" onchange="saveSettings()">
+            </div>
+            
+            <div class="setting-item">
+                <label class="setting-label">📊 Leverage</label>
+                <input type="number" class="setting-input" id="leverage" value="10" min="1" max="125" step="1" onchange="saveSettings()">
+                <div style="font-size: 0.8em; color: #64748b; margin-top: 5px;">
+                    1x-125x (Higher = More risk/reward)
+                </div>
             </div>
             
             <div class="setting-item">
@@ -1283,10 +1303,13 @@
             sound: true,
             voice: true,
             quality: 'balanced',
-            positionSize: 1000
+            exitStrategy: 'moderate', // TP/SL calculation strategy
+            positionSize: 100,
+            leverage: 10 // Default 10x leverage
         };
         let scanInterval = null;
         let priceUpdateInterval = null;
+        let priceWs = null; // WebSocket for real-time price updates
         let isScanning = false;
         let currentAssetFilter = 'all';
         
@@ -1295,7 +1318,9 @@
         if (savedSettings) {
             settings = {...settings, ...JSON.parse(savedSettings)};
             document.getElementById('positionSize').value = settings.positionSize;
+            document.getElementById('leverage').value = settings.leverage || 10;
             document.getElementById('qualityMode').value = settings.quality;
+            document.getElementById('exitStrategy').value = settings.exitStrategy || 'moderate';
             document.getElementById('autoScanEnabled').checked = settings.autoScan;
             document.getElementById('soundEnabled').checked = settings.sound;
             document.getElementById('voiceEnabled').checked = settings.voice;
@@ -1389,35 +1414,115 @@
             const streams = symbols.map(s => `${s.toLowerCase()}@ticker`).join('/');
             const wsUrl = `wss://stream.binance.com:9443/stream?streams=${streams}`;
             
+            console.log('🔌 Connecting WebSocket to:', streams);
+            
             const ws = new WebSocket(wsUrl);
+            let pingInterval = null;
+            let lastMessageTime = Date.now();
+            let reconnectTimeout = null;
+            let isReconnecting = false;
             
             ws.onopen = () => {
-                console.log('✅ WebSocket connected for price updates');
+                console.log('✅ WebSocket CONNECTED for:', symbols);
+                lastMessageTime = Date.now();
+                isReconnecting = false;
+                
+                // Clear any pending reconnect
+                if (reconnectTimeout) {
+                    clearTimeout(reconnectTimeout);
+                    reconnectTimeout = null;
+                }
+                
+                // Heartbeat: Check if we're receiving messages
+                pingInterval = setInterval(() => {
+                    const timeSinceLastMessage = Date.now() - lastMessageTime;
+                    console.log(`💓 Heartbeat: ${timeSinceLastMessage}ms since last message`);
+                    
+                    // If no message in 30 seconds, reconnect
+                    if (timeSinceLastMessage > 30000) {
+                        console.error('❌ WebSocket appears dead (no messages for 30s) - reconnecting...');
+                        clearInterval(pingInterval);
+                        ws.close();
+                    }
+                }, 10000); // Check every 10 seconds
             };
             
             ws.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-                if (data.data && data.data.s && data.data.c) {
-                    const symbol = data.data.s;
-                    const price = parseFloat(data.data.c);
-                    priceCache.set(symbol, price);
+                try {
+                    lastMessageTime = Date.now();
+                    const data = JSON.parse(event.data);
                     
-                    // Update active positions with new price
-                    activePositions.forEach(pos => {
-                        if (pos.symbol === symbol) {
-                            pos.currentPrice = price;
+                    if (data.data && data.data.s && data.data.c) {
+                        const symbol = data.data.s;
+                        const price = parseFloat(data.data.c);
+                        priceCache.set(symbol, price);
+                        
+                        console.log(`💰 ${symbol}: $${price.toFixed(2)}`);
+                        
+                        // Update active positions with new price
+                        let updated = false;
+                        let matchFound = false;
+                        activePositions.forEach(pos => {
+                            if (pos.symbol === symbol) {
+                                pos.currentPrice = price;
+                                pos.lastPriceUpdate = Date.now(); // Track update time
+                                updated = true;
+                                matchFound = true;
+                                console.log(`✅ Updated position for ${symbol}`);
+                            }
+                        });
+                        
+                        if (!matchFound) {
+                            console.warn(`⚠️ Received price for ${symbol} but no matching position found!`);
+                            console.log(`Active symbols:`, activePositions.map(p => p.symbol));
                         }
-                    });
+                        
+                        // CRITICAL: Immediately save and update UI
+                        if (updated) {
+                            localStorage.setItem('kh_activePositions', JSON.stringify(activePositions));
+                            
+                            // ALWAYS update if on positions tab (don't trust currentTab variable)
+                            const positionsTabElement = document.getElementById('positionsTab');
+                            if (positionsTabElement && positionsTabElement.classList.contains('active')) {
+                                displayPositions();
+                            }
+                        }
+                    } else {
+                        // Log unexpected message format
+                        console.log('📨 WebSocket message (non-ticker):', data);
+                    }
+                } catch (error) {
+                    console.error('❌ Error processing WebSocket message:', error);
                 }
             };
             
             ws.onerror = (error) => {
-                console.error('❌ WebSocket error:', error);
+                console.error('❌ WebSocket ERROR:', error);
+                clearInterval(pingInterval);
             };
             
-            ws.onclose = () => {
-                console.log('⚠️ WebSocket closed. Will use REST API for prices.');
-                // Don't auto-reconnect here, let startPriceUpdates handle it
+            ws.onclose = (event) => {
+                console.log('⚠️ WebSocket CLOSED:', event.code, event.reason || 'No reason provided');
+                clearInterval(pingInterval);
+                
+                // Prevent multiple reconnections
+                if (isReconnecting) {
+                    console.log('⏸️ Already reconnecting, skipping...');
+                    return;
+                }
+                
+                // Auto-reconnect if we still have positions
+                if (activePositions.length > 0) {
+                    isReconnecting = true;
+                    console.log('🔄 Auto-reconnecting WebSocket in 3 seconds...');
+                    reconnectTimeout = setTimeout(() => {
+                        if (activePositions.length > 0 && isReconnecting) {
+                            console.log('🔄 Attempting reconnection...');
+                            startPriceUpdates();
+                        }
+                        isReconnecting = false;
+                    }, 3000);
+                }
             };
             
             return ws;
@@ -2330,7 +2435,7 @@ async function startScan() {
                     scanned++;
                     // Silent scan - no status updates
                     
-                    const signal = await generateSignalForAsset(symbol, settings.quality || 'balanced', 'moderate');
+                    const signal = await generateSignalForAsset(symbol, settings.quality || 'balanced', settings.exitStrategy || 'moderate');
                     
                     // Add ALL signals (including WAIT) like main HTML does
                     // Filtering happens at display time
@@ -2564,36 +2669,47 @@ async function startScan() {
         }
         
         function displayPositions() {
-            const container = document.getElementById('positionsTab');
-            document.getElementById('positionCount').textContent = activePositions.length;
-            
-            if (activePositions.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">📊</div>
-                        <div class="empty-text">No Active Positions</div>
-                        <div class="empty-subtext">Take a position from discoveries</div>
-                    </div>
-                `;
-                return;
-            }
-            
-            // Check if we need to rebuild cards (position added/removed)
-            const existingCards = container.querySelectorAll('.discovery-card');
-            const needsRebuild = existingCards.length !== activePositions.length;
-            
-            if (needsRebuild) {
-                // Full rebuild only when positions change
-                container.innerHTML = activePositions.map(pos => {
+            try {
+                console.log('🔄 Updating positions display...');
+                const container = document.getElementById('positionsTab');
+                if (!container) {
+                    console.error('❌ positionsTab container not found!');
+                    return;
+                }
+                
+                document.getElementById('positionCount').textContent = activePositions.length;
+                
+                if (activePositions.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">📊</div>
+                            <div class="empty-text">No Active Positions</div>
+                            <div class="empty-subtext">Take a position from discoveries</div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                console.log(`📊 Displaying ${activePositions.length} positions`);
+                
+                // Check if we need to rebuild cards (position added/removed)
+                const existingCards = container.querySelectorAll('.discovery-card');
+                const needsRebuild = existingCards.length !== activePositions.length;
+                
+                if (needsRebuild) {
+                    console.log('🔨 Full rebuild needed');
+                    // Full rebuild only when positions change
+                    container.innerHTML = activePositions.map(pos => {
                     const currentPrice = pos.currentPrice || pos.entryPrice;
+                    const leverage = settings.leverage || 10;
                     let pnl, pnlPercent;
                     
                     if (pos.action === 'LONG') {
-                        pnl = (currentPrice - pos.entryPrice) * (settings.positionSize / pos.entryPrice);
-                        pnlPercent = ((currentPrice - pos.entryPrice) / pos.entryPrice) * 100;
+                        pnl = (currentPrice - pos.entryPrice) * (settings.positionSize / pos.entryPrice) * leverage;
+                        pnlPercent = ((currentPrice - pos.entryPrice) / pos.entryPrice) * 100 * leverage;
                     } else {
-                        pnl = (pos.entryPrice - currentPrice) * (settings.positionSize / pos.entryPrice);
-                        pnlPercent = ((pos.entryPrice - currentPrice) / pos.entryPrice) * 100;
+                        pnl = (pos.entryPrice - currentPrice) * (settings.positionSize / pos.entryPrice) * leverage;
+                        pnlPercent = ((pos.entryPrice - currentPrice) / pos.entryPrice) * 100 * leverage;
                     }
                     
                     const tpPercent = ((pos.tpPrice - pos.entryPrice) / pos.entryPrice * 100);
@@ -2670,14 +2786,15 @@ async function startScan() {
                     if (!card) return;
                     
                     const currentPrice = pos.currentPrice || pos.entryPrice;
+                    const leverage = settings.leverage || 10;
                     let pnl, pnlPercent;
                     
                     if (pos.action === 'LONG') {
-                        pnl = (currentPrice - pos.entryPrice) * (settings.positionSize / pos.entryPrice);
-                        pnlPercent = ((currentPrice - pos.entryPrice) / pos.entryPrice) * 100;
+                        pnl = (currentPrice - pos.entryPrice) * (settings.positionSize / pos.entryPrice) * leverage;
+                        pnlPercent = ((currentPrice - pos.entryPrice) / pos.entryPrice) * 100 * leverage;
                     } else {
-                        pnl = (pos.entryPrice - currentPrice) * (settings.positionSize / pos.entryPrice);
-                        pnlPercent = ((pos.entryPrice - currentPrice) / pos.entryPrice) * 100;
+                        pnl = (pos.entryPrice - currentPrice) * (settings.positionSize / pos.entryPrice) * leverage;
+                        pnlPercent = ((pos.entryPrice - currentPrice) / pos.entryPrice) * 100 * leverage;
                     }
                     
                     // Update only the dynamic values
@@ -2700,6 +2817,11 @@ async function startScan() {
                     }
                 });
             }
+            console.log('✅ Positions display updated successfully');
+        } catch (error) {
+            console.error('❌ ERROR in displayPositions:', error);
+            console.error('Stack:', error.stack);
+        }
         }
         
         function displayJournal() {
@@ -2799,8 +2921,9 @@ async function startScan() {
             
             const signal = discoveries.find(d => d.id === signalId);
             if (!signal) {
-                console.error('❌ Signal not found!', signalId);
-                alert('Error: Signal not found!');
+                console.error('❌ Signal not found in discoveries!', signalId);
+                console.error('📊 Available signals:', discoveries.map(d => ({id: d.id, symbol: d.symbol})));
+                alert('Error: Signal not found! The signal may have been updated. Please try scanning again.');
                 return;
             }
             
@@ -2818,7 +2941,8 @@ async function startScan() {
             const position = {
                 ...signal,
                 currentPrice: signal.entryPrice,
-                openedAt: Date.now()
+                openedAt: Date.now(),
+                protectionUntil: Date.now() + 5000 // 5 second protection from auto-close
             };
             
             console.log('📥 Adding position:', position);
@@ -2850,14 +2974,15 @@ async function startScan() {
             if (!position) return;
             
             const currentPrice = position.currentPrice || position.entryPrice;
+            const leverage = settings.leverage || 10;
             let pnl, pnlPercent;
             
             if (position.action === 'LONG') {
-                pnl = (currentPrice - position.entryPrice) * (settings.positionSize / position.entryPrice);
-                pnlPercent = ((currentPrice - position.entryPrice) / position.entryPrice) * 100;
+                pnl = (currentPrice - position.entryPrice) * (settings.positionSize / position.entryPrice) * leverage;
+                pnlPercent = ((currentPrice - position.entryPrice) / position.entryPrice) * 100 * leverage;
             } else {
-                pnl = (position.entryPrice - currentPrice) * (settings.positionSize / position.entryPrice);
-                pnlPercent = ((position.entryPrice - currentPrice) / position.entryPrice) * 100;
+                pnl = (position.entryPrice - currentPrice) * (settings.positionSize / position.entryPrice) * leverage;
+                pnlPercent = ((position.entryPrice - currentPrice) / position.entryPrice) * 100 * leverage;
             }
             
             const trade = {
@@ -2888,31 +3013,40 @@ async function startScan() {
         // LIVE PRICE UPDATES via WebSocket
         // ===================================================================
         
-        let priceWs = null;
-        
         function startPriceUpdates() {
-            if (activePositions.length === 0) return;
+            if (activePositions.length === 0) {
+                console.log('⏸️ No positions, skipping price updates');
+                return;
+            }
             
             // Subscribe to all active position symbols via WebSocket
             const symbols = activePositions.map(p => p.symbol);
             
-            // Close existing WebSocket if switching symbols
+            // Close existing WebSocket if it exists
             if (priceWs) {
-                priceWs.close();
+                console.log('🔌 Closing existing WebSocket...');
+                try {
+                    priceWs.close();
+                } catch (e) {
+                    console.warn('Warning closing old WebSocket:', e);
+                }
                 priceWs = null;
             }
-            
-            // Create new WebSocket connection
-            priceWs = subscribeToPriceUpdates(symbols);
             
             // Clear existing interval
             if (priceUpdateInterval) {
                 clearInterval(priceUpdateInterval);
+                priceUpdateInterval = null;
             }
             
-            // Update UI every 1 second (faster updates)
+            // Create new WebSocket connection
+            console.log('🆕 Creating new WebSocket for:', symbols);
+            priceWs = subscribeToPriceUpdates(symbols);
+            
+            // Check SL/TP every 2 seconds (WebSocket handles UI updates)
             priceUpdateInterval = setInterval(async () => {
                 if (activePositions.length === 0) {
+                    console.log('⏹️ No more positions, stopping updates');
                     clearInterval(priceUpdateInterval);
                     priceUpdateInterval = null;
                     if (priceWs) {
@@ -2922,16 +3056,37 @@ async function startScan() {
                     return;
                 }
                 
-                // Update prices for all positions
+                // FALLBACK: Update prices via REST API for positions not updated via WebSocket
                 for (const position of activePositions) {
-                    // Try to get fresh price from cache or API
-                    const currentPrice = await getCurrentPrice(position.symbol);
-                    if (currentPrice) {
-                        position.currentPrice = currentPrice;
+                    // If price hasn't been updated for 10 seconds, fetch via REST
+                    const lastUpdate = position.lastPriceUpdate || 0;
+                    const timeSinceUpdate = Date.now() - lastUpdate;
+                    
+                    if (timeSinceUpdate > 10000 || !position.currentPrice) {
+                        console.warn(`⚠️ ${position.symbol} not updating via WebSocket (${timeSinceUpdate}ms), fetching via REST...`);
+                        try {
+                            const price = await getCurrentPrice(position.symbol);
+                            if (price) {
+                                position.currentPrice = price;
+                                position.lastPriceUpdate = Date.now();
+                                console.log(`✅ REST fallback: ${position.symbol} = $${price}`);
+                                
+                                // Update UI immediately - check DOM element, not variable
+                                const positionsTabElement = document.getElementById('positionsTab');
+                                if (positionsTabElement && positionsTabElement.classList.contains('active')) {
+                                    displayPositions();
+                                }
+                            }
+                        } catch (error) {
+                            console.error(`❌ REST fallback failed for ${position.symbol}:`, error);
+                        }
                     }
                     
-                    // Check TP/SL
-                    if (position.currentPrice) {
+                    // Check TP/SL (but respect protection period)
+                    const now = Date.now();
+                    const isProtected = position.protectionUntil && now < position.protectionUntil;
+                    
+                    if (position.currentPrice && !isProtected) {
                         if (position.action === 'LONG') {
                             if (position.currentPrice >= position.tpPrice) {
                                 await closePosition(position.id, 'tp');
@@ -2949,13 +3104,24 @@ async function startScan() {
                 }
                 
                 localStorage.setItem('kh_activePositions', JSON.stringify(activePositions));
-                
-                if (currentTab === 'positions') {
-                    displayPositions();
-                }
-            }, 1000); // Update every 1 second (faster!)
+            }, 2000); // Check every 2 seconds
             
             console.log('✅ Price updates started for', symbols.length, 'positions');
+            
+            // Handle page visibility changes (iOS background/foreground) - add only once
+            if (!window.khVisibilityHandlerAdded) {
+                document.addEventListener('visibilitychange', () => {
+                    if (document.visibilityState === 'visible') {
+                        console.log('📱 App became visible');
+                        // Only reconnect if we have positions and WebSocket is not open
+                        if (activePositions.length > 0 && (!priceWs || priceWs.readyState !== WebSocket.OPEN)) {
+                            console.log('🔄 Restarting price updates on visibility change');
+                            setTimeout(() => startPriceUpdates(), 1000);
+                        }
+                    }
+                });
+                window.khVisibilityHandlerAdded = true;
+            }
         }
         
         // ===================================================================
@@ -2974,10 +3140,7 @@ async function startScan() {
                 document.getElementById('discoveriesTab').classList.add('active');
                 document.getElementById('filterBar').style.display = 'flex';
                 
-                // Clear app badge when viewing discoveries
-                if ('setAppBadge' in navigator) {
-                    navigator.setAppBadge(0).catch(() => {});
-                }
+                // Badge removed - no action needed
             } else if (tab === 'positions') {
                 document.querySelectorAll('.tab')[1].classList.add('active');
                 document.getElementById('positionsTab').classList.add('active');
@@ -3243,22 +3406,7 @@ async function startScan() {
             notification.onclick = () => {
                 window.focus();
                 notification.close();
-                // Clear badge when notification clicked
-                if ('setAppBadge' in navigator) {
-                    navigator.setAppBadge(0).catch(() => {});
-                }
             };
-            
-            // Set badge number to total unread signals
-            if ('setAppBadge' in navigator) {
-                const nowSignals = discoveries.filter(d => {
-                    if (!d || !d.action) return false;
-                    if (d.action === 'WAIT' || d.action === 'ERROR') return false;
-                    const timing = d.timing || d.aiTiming || '';
-                    return timing.includes('NOW');
-                });
-                navigator.setAppBadge(nowSignals.length).catch(() => {});
-            }
         }
         
         function playSound() {
@@ -3330,7 +3478,9 @@ async function startScan() {
                 sound: document.getElementById('soundEnabled').checked,
                 voice: document.getElementById('voiceEnabled').checked,
                 quality: document.getElementById('qualityMode').value,
-                positionSize: parseFloat(document.getElementById('positionSize').value)
+                exitStrategy: document.getElementById('exitStrategy').value,
+                positionSize: parseFloat(document.getElementById('positionSize').value),
+                leverage: parseFloat(document.getElementById('leverage').value) || 10
             };
             
             localStorage.setItem('kh_discoverySettings', JSON.stringify(settings));
