@@ -151,7 +151,7 @@
         .discovery-card {
             background: white;
             border-radius: 16px;
-            padding: 20px;
+            padding: 16px;
             margin-bottom: 15px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             position: relative;
@@ -270,14 +270,14 @@
         
         .prices {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin: 15px 0;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin: 12px 0 8px 0;
         }
         
         .price-box {
             background: rgba(255,255,255,0.6);
-            padding: 12px;
+            padding: 10px;
             border-radius: 10px;
             text-align: center;
         }
@@ -315,9 +315,9 @@
         
         .pnl-display {
             background: rgba(255,255,255,0.8);
-            padding: 15px;
+            padding: 12px;
             border-radius: 12px;
-            margin: 15px 0;
+            margin: 10px 0 8px 0;
             text-align: center;
         }
         
@@ -376,17 +376,17 @@
         
         .action-btns {
             display: flex;
-            gap: 10px;
-            margin-top: 15px;
+            gap: 8px;
+            margin-top: 8px;
         }
         
         .btn {
             flex: 1;
-            padding: 14px;
+            padding: 12px;
             border: none;
             border-radius: 12px;
             font-weight: 700;
-            font-size: 1em;
+            font-size: 0.95em;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
@@ -788,6 +788,33 @@
             cursor: pointer;
         }
         
+        .asset-add-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+        
+        .asset-add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .asset-add-btn:active {
+            transform: translateY(0);
+        }
+        
+        .asset-add-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
         .scan-status {
             text-align: center;
             padding: 12px;
@@ -1109,48 +1136,115 @@
         // DEFAULT ASSETS - Top 200 Binance USDT Pairs
         // ===================================================================
         
-        const DEFAULT_ASSETS = [
+        // All available crypto assets (300+ coins)
+        const ALL_CRYPTO_ASSETS = [
+            // Major Coins
             'BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'SOLUSDT', 'XRPUSDT',
             'ADAUSDT', 'DOGEUSDT', 'AVAXUSDT', 'TRXUSDT', 'LINKUSDT',
             'DOTUSDT', 'MATICUSDT', 'SHIBUSDT', 'LTCUSDT', 'UNIUSDT',
             'ATOMUSDT', 'ETCUSDT', 'XLMUSDT', 'NEARUSDT', 'ALGOUSDT',
+            
+            // Layer 1 & Layer 2
             'APTUSDT', 'ARBUSDT', 'OPUSDT', 'LDOUSDT', 'SUIUSDT',
             'INJUSDT', 'FILUSDT', 'IMXUSDT', 'ICPUSDT', 'VETUSDT',
-            'HBARUSDT', 'AAVEUSDT', 'MKRUSDT', 'GRTUSDT', 'SANDUSDT',
-            'MANAUSDT', 'AXSUSDT', 'THETAUSDT', 'FTMUSDT', 'EGLDUSDT',
-            'EOSUSDT', 'XTZUSDT', 'KSMUSDT', 'ARUSDT', 'FLOWUSDT',
-            'CHZUSDT', 'RUNEUSDT', 'WAVESUSDT', 'XMRUSDT', 'ZECUSDT',
-            'COMPUSDT', 'CRVUSDT', 'YFIUSDT', 'SNXUSDT', 'UMAUSDT',
-            'BALUSDT', 'LRCUSDT', 'ENJUSDT', 'SUSHIUSDT', 'ZRXUSDT',
-            'RENUSDT', 'KNCUSDT', 'BANDUSDT', 'STORJUSDT', 'CTKUSDT',
-            'ANKRUSDT', 'OCEANUSDT', 'QTUMUSDT', 'ZILUSDT', 'ICXUSDT',
-            'ONTUSDT', 'IOTAUSDT', 'OMGUSDT', 'BATUSDT', 'CELRUSDT',
-            'KAVAUSDT', 'RVNUSDT', 'CVCUSDT', 'NEOUSDT', 'IOSTUSDT',
-            'DASHUSDT', 'NANOUSDT', 'ONEUSDT', 'DGBUSDT', 'BTSUSDT',
-            'SCUSDT', 'LSKUSDT', 'ZENUSDT', 'STMXUSDT', 'KMDUSDT',
-            'BNXUSDT', 'STXUSDT', 'RSRUSDT', 'AUDIOUSDT', 'COTIUSDT',
-            'SKLUSDT', 'LINAUSDT', 'REEFUSDT', 'OGUSDT', 'POLYUSDT',
+            'HBARUSDT', 'STXUSDT', 'SEIUSDT', 'TIAUSDT', 'PENDLEUSDT',
+            'EGLDUSDT', 'KSMUSDT', 'ARUSDT', 'FLOWUSDT', 'FTMUSDT',
+            'ZILUSDT', 'ICXUSDT', 'QTUMUSDT', 'ZENUSDT', 'STRKUSDT',
+            
+            // DeFi
+            'AAVEUSDT', 'MKRUSDT', 'GRTUSDT', 'COMPUSDT', 'CRVUSDT',
+            'YFIUSDT', 'SNXUSDT', 'UMAUSDT', 'BALUSDT', 'LRCUSDT',
+            'SUSHIUSDT', 'ZRXUSDT', 'KNCUSDT', 'BANDUSDT', 'RUNEUSDT',
+            'CAKEUSDT', 'CVXUSDT', 'GMXUSDT', 'DYDXUSDT', 'RDNTUSDT',
+            '1INCHUSDT', 'ALPHAUSDT', 'BADGERUSDT', 'RPLUSDT',
+            
+            // Metaverse & Gaming
+            'SANDUSDT', 'MANAUSDT', 'AXSUSDT', 'THETAUSDT', 'ENJUSDT',
             'GALAUSDT', 'APEUSDT', 'GMTUSDT', 'GALUSDT', 'JASMYUSDT',
-            'LOOMUSDT', 'MAGICUSDT', 'ILVUSDT', 'TLMUSDT',
-            'SFPUSDT', 'C98USDT', 'PERPUSDT',
-            'RAREUSDT', 'DUSKUSDT', 'GLMUSDT', 'VOXELUSDT', 'STARUSDT',
-            'NMRUSDT', 'RDNTUSDT', 'CTSIUSDT', 'HIGHUSDT', 'CVXUSDT',
-            'AGLDUSDT', 'FIDAUSDT', 'BLURUSDT', 'BICOUSDT', 'ASTRUSDT',
+            'LOOMUSDT', 'MAGICUSDT', 'ILVUSDT', 'TLMUSDT', 'YGGUSDT',
+            'GHSTUSDT', 'SFPUSDT', 'C98USDT', 'PERPUSDT', 'RAREUSDT',
+            'VOXELUSDT', 'STARUSDT', 'AGLDUSDT', 'FIDAUSDT', 'BLURUSDT',
+            'BICOUSDT', 'ASTRUSDT', 'OGUSDT', 'POLYUSDT', 'CHZUSDT',
+            
+            // AI & Data
             'RENDERUSDT', 'FETUSDT', 'AGIXUSDT', 'OCEUSDT', 'PHBUSDT',
-            'ARKMUSDT', 'IQUSDT', 'NTRNUSDT', 'TIAUSDT', 'ARKUSDT',
-            'AIUSDT', 'WLDUSDT', 'PYTHUSDT', 'JTOUSDT', 'ACEUSDT',
+            'ARKMUSDT', 'IQUSDT', 'NTRNUSDT', 'ARKUSDT', 'AIUSDT',
+            'WLDUSDT', 'PYTHUSDT', 'JTOUSDT', 'NMRUSDT', 'CTSIUSDT',
+            'HIGHUSDT', 'GRTUSDT', 'TAOUSDT', 'RNDROUSDT', 'OCEANUSDT',
+            
+            // Meme Coins
+            'PEPEUSDT', 'FLOKIUSDT', 'BONKUSDT', 'WIFUSDT', '1000SATSUSDT',
+            'RATUSDT', 'ORDIUSDT', 'TURBOUSDT', 'NEIROUSDT', 'POPCATUSDT',
+            'MEMEUSDT', 'MEWUSDT', 'MOGUSDT', 'BOMEUSDT', 'DOGSUSDT',
+            'HMSTRUSDT', 'SCRUSDT', 'EIGENUSDT', 'BANUSDT', 'ACTUSDT',
+            'PNUTUSDT', 'GOATUSDT', 'MOVEUSDT', 'MEUSDT', 'VANAUSDT',
+            
+            // New & Trending
+            'POLUSDT', 'JUPUSDT', 'SAGAUSDT', 'OMNIUSDT', 'ACEUSDT',
             'NFPUSDT', 'ALTUSDT', 'XAIUSDT', 'MANTAUSDT', 'ONDOUSDT',
             'DYMUSDT', 'PIXELUSDT', 'PORTALUSDT', 'PDAUSDT', 'AEVOUSDT',
-            'ENAUSDT', 'BBUSDT', 'NOTUSDT', 'IOUSDT',
-            'PEPEUSDT', 'FLOKIUSDT', 'BONKUSDT', 'WIFUSDT', '1000SATSUSDT',
-            'RATUSDT', 'ORDIUSDT', 'TURBOUSDT', 'NEIROUSDT',
-            'POPCATUSDT', 'MEMEUSDT', 'MEWUSDT', 'MOGUSDT',
-            'BOMEUSDT', 'DOGSUSDT', 'HMSTRUSDT',
-            'SCRUSDT', 'EIGENUSDT', 'BANUSDT', 'ACTUSDT', 'PNUTUSDT',
-            'GOATUSDT', 'MOVEUSDT', 'MEUSDT', 'VANAUSDT', 'POLUSDT',
-            'SEIUSDT', 'JUPUSDT', 'STRKUSDT', 'PENDLEUSDT',
-            'TNSRUSDT', 'SAGAUSDT', 'TAOUSDT', 'OMNIUSDT'
+            'ENAUSDT', 'BBUSDT', 'NOTUSDT', 'IOUSDT', 'TNSRUSDT',
+            
+            // Established Coins
+            'EOSUSDT', 'XTZUSDT', 'WAVESUSDT', 'XMRUSDT', 'ZECUSDT',
+            'DASHUSDT', 'NEOUSDT', 'IOSTUSDT', 'ONTUSDT', 'IOTAUSDT',
+            'OMGUSDT', 'BATUSDT', 'CELRUSDT', 'KAVAUSDT', 'RVNUSDT',
+            'CVCUSDT', 'NANOUSDT', 'ONEUSDT', 'DGBUSDT', 'BTSUSDT',
+            'SCUSDT', 'LSKUSDT', 'STMXUSDT', 'KMDUSDT', 'BNXUSDT',
+            'RSRUSDT', 'AUDIOUSDT', 'COTIUSDT', 'SKLUSDT', 'LINAUSDT',
+            'REEFUSDT', 'DUSKUSDT', 'GLMUSDT', 'ANKRUSDT', 'STORJUSDT',
+            'CTKUSDT',
+            
+            // Infrastructure
+            'LINKUSDT', 'CHZBUSDT', 'LRCUSDT', 'RENUSDT', 'ENJUSDT',
+            'MANAUSDT', 'SANDUSDT', 'BATUSDT', 'ZRXUSDT', 'KNCUSDT',
+            
+            // Additional Popular
+            'BELUSDT', 'WINGUSDT', 'SUSHIBUSDT', 'SXPUSDT', 'KSMUSDT',
+            'DGBUSDT', 'GBPUSDT', 'SUSHIUSDT', 'YFIIUSDT', 'KSMUSDT',
+            'DIAUSDT', 'RUNEUSDT', 'FIOUSDT', 'UMAUSDT', 'BELUSDT',
+            'WINGUSDT', 'UNIUSDT', 'AVAXUSDT', 'HNTUSDT', 'FLMUSDT',
+            
+            // More DeFi & Ecosystem
+            'ANTUSDT', 'REQUSDT', 'VIBUSDT', 'ARPAUSDT', 'TRIBEUSDT',
+            'TORNUSDT', 'BAKEUSDT', 'BURGERUSDT', 'SLPUSDT', 'TRBUSDT',
+            'SHIBUSDT', 'ICXUSDT', 'TWTUSDT', 'FIROUSDT', 'LITUSDT',
+            'SFPUSDT', 'DODOUSDT', 'CAKEUSDT', 'ACMUSDT', 'BADGERUSDT',
+            'FISUSDT', 'ORNUSDT', 'UTUSDT', 'XVSUSDT', 'ALPHAUSDT',
+            'VIDTUSDT', 'AUCTIONUSDT', 'PNTUSDT', 'BONDUSDT', 'MLNUSDT',
+            
+            // Newer Additions
+            'CLVUSDT', 'YGGUSDT', 'ALICEUSDT', 'AUDIOUSDT', 'C98USDT',
+            'MASKUSDT', 'PERPUSDT', 'RAREUSDT', 'LAZIOUSDT', 'CHESSUSDT',
+            'ADXUSDT', 'AUCTIONUSDT', 'DARUSDT', 'BNXUSDT', 'RGTUSDT',
+            'MOVRUSDT', 'CITYUSDT', 'ENSUSDT', 'JASMYUSDT', 'AMPUSDT',
+            'PLAUSDT', 'PYRUSDT', 'RARIUSDT', 'ALCXUSDT', 'SANTOSUSDT',
+            'MCUSDT', 'BIFIUSDT', 'PORTOUSDT', 'ERNUSDT', 'ALPACAUSDT',
+            
+            // Additional Tokens
+            'FORTHUSDT', 'EASUSDT', 'TKONUSDT', 'STRAXUSDT', 'UNFIUSDT',
+            'FRONTUSDT', 'CVPUSDT', 'AGLDUSDT', 'RADUSDT', 'BETAUSDT',
+            'PSGUSDT', 'DEXEUSDT', 'CLVUSDT', 'QNTUSDT', 'FLOWUSDT',
+            'MINAUSDT', 'RAYUSDT', 'FARMUSDT', 'REQUSDT', 'GHSTUSDT',
+            'WAXPUSDT', 'GNOUSDT', 'XECUSDT', 'ELFUSDT', 'DYDXUSDT',
+            'POLYUSDT', 'IDEXUSDT', 'VIDTUSDT', 'USDPUSDT', 'TVKUSDT',
+            'VGXUSDT', 'GALAUSDT', 'ILVUSDT', 'YGGUSDT', 'SYSUSDT',
+            'DFUSDT', 'FIDAUSDT', 'AGLDUSDT', 'RADUSDT', 'UNIUSDT',
+            'ELFUSDT', 'BAKEUSDT', 'COSUSDT', 'MTLUSDT', 'OGNUSDT',
+            'NKNUSDT', 'SCRTUSDT', 'JUVUSDT', 'PSGUSDT', 'CITYUSDT'
         ];
+        
+        // Default favorites (BTC and ETH to start)
+        const DEFAULT_FAVORITES = ['BTCUSDT', 'ETHUSDT'];
+        
+        // User's favorite assets (max 50)
+        let favoriteAssets = JSON.parse(localStorage.getItem('kh_favoriteAssets') || JSON.stringify(DEFAULT_FAVORITES));
+        
+        // Ensure favorites is an array and has defaults
+        if (!Array.isArray(favoriteAssets) || favoriteAssets.length === 0) {
+            favoriteAssets = [...DEFAULT_FAVORITES];
+            localStorage.setItem('kh_favoriteAssets', JSON.stringify(favoriteAssets));
+        }
         
         // ===================================================================
         // STATE MANAGEMENT
@@ -1159,7 +1253,6 @@
         let discoveries = [];
         let activePositions = JSON.parse(localStorage.getItem('kh_activePositions') || '[]');
         let journal = JSON.parse(localStorage.getItem('kh_journal') || '[]');
-        let customAssets = JSON.parse(localStorage.getItem('kh_customAssets') || '[]');
         
         // Safety check: Ensure activePositions is always an array
         if (!Array.isArray(activePositions)) {
@@ -1175,12 +1268,13 @@
             localStorage.setItem('kh_journal', '[]');
         }
         
-        // Safety check: Ensure customAssets is always an array
-        if (!Array.isArray(customAssets)) {
-            console.warn('⚠️ customAssets was not an array, resetting...');
-            customAssets = [];
-            localStorage.setItem('kh_customAssets', '[]');
+        // Safety check: Ensure favoriteAssets is always an array
+        if (!Array.isArray(favoriteAssets)) {
+            console.warn('⚠️ favoriteAssets was not an array, resetting...');
+            favoriteAssets = [...DEFAULT_FAVORITES];
+            localStorage.setItem('kh_favoriteAssets', JSON.stringify(favoriteAssets));
         }
+        
         let currentFilter = 'all';
         let currentTab = 'discoveries';
         let settings = {
@@ -1297,6 +1391,10 @@
             
             const ws = new WebSocket(wsUrl);
             
+            ws.onopen = () => {
+                console.log('✅ WebSocket connected for price updates');
+            };
+            
             ws.onmessage = (event) => {
                 const data = JSON.parse(event.data);
                 if (data.data && data.data.s && data.data.c) {
@@ -1314,7 +1412,12 @@
             };
             
             ws.onerror = (error) => {
-                console.error('WebSocket error:', error);
+                console.error('❌ WebSocket error:', error);
+            };
+            
+            ws.onclose = () => {
+                console.log('⚠️ WebSocket closed. Will use REST API for prices.');
+                // Don't auto-reconnect here, let startPriceUpdates handle it
             };
             
             return ws;
@@ -2200,10 +2303,8 @@ async function startScan() {
             isScanning = true;
             discoveries = [];
             
-            const allAssets = [...DEFAULT_ASSETS, ...customAssets];
-            
-            // Scan ALL assets for complete coverage
-            const assetsToScan = allAssets;
+            // Scan only FAVORITE assets (max 50)
+            const assetsToScan = favoriteAssets;
             
             const scanStatus = document.getElementById('scanStatus');
             const container = document.getElementById('discoveriesTab');
@@ -2211,7 +2312,10 @@ async function startScan() {
             container.innerHTML = `
                 <div class="loading">
                     <div class="spinner"></div>
-                    <div>Scanning ${assetsToScan.length} top assets...</div>
+                    <div>Scanning ${assetsToScan.length} favorite assets...</div>
+                    <div style="font-size: 0.85em; opacity: 0.8; margin-top: 8px;">
+                        ${assetsToScan.length <= 10 ? '⚡ Fast scan mode' : assetsToScan.length <= 30 ? '🚀 Balanced scan' : '📊 Comprehensive scan'}
+                    </div>
                 </div>
             `;
             
@@ -2328,7 +2432,14 @@ async function startScan() {
                 return true;
             });
             
-            console.log('📊 After filtering:', filtered.length, 'NOW signals');
+            // Sort by timestamp - most recent first
+            filtered.sort((a, b) => {
+                const timeA = a.timestamp ? new Date(a.timestamp).getTime() : 0;
+                const timeB = b.timestamp ? new Date(b.timestamp).getTime() : 0;
+                return timeB - timeA; // Descending order (newest first)
+            });
+            
+            console.log('📊 After filtering:', filtered.length, 'NOW signals (sorted by most recent)');
             
             if (filtered.length === 0) {
                 container.innerHTML = `
@@ -2379,6 +2490,14 @@ async function startScan() {
                                         <div style="display: flex; align-items: center; gap: 8px;">
                                             <div class="timing ${isExcellent ? 'excellent' : ''}">${signal.action || 'SIGNAL'} NOW</div>
                                             ${isExcellent ? '<span class="excellent-badge">⭐ EXCELLENT</span>' : ''}
+                                        </div>
+                                        <div style="font-size: 0.75em; color: #64748b; margin-top: 5px;">
+                                            📅 ${signal.timestamp ? new Date(signal.timestamp).toLocaleString('en-US', { 
+                                                month: 'short', 
+                                                day: 'numeric', 
+                                                hour: '2-digit', 
+                                                minute: '2-digit'
+                                            }) : 'Just now'}
                                         </div>
                                     </div>
                                 </div>
@@ -2488,6 +2607,14 @@ async function startScan() {
                                 <div>
                                     <div class="symbol">${pos.action === 'LONG' ? '🚀' : '📉'} ${pos.symbol}</div>
                                     <div class="timing">${pos.action} Position</div>
+                                    <div style="font-size: 0.75em; color: #64748b; margin-top: 5px;">
+                                        📅 Opened: ${pos.openedAt ? new Date(pos.openedAt).toLocaleString('en-US', { 
+                                            month: 'short', 
+                                            day: 'numeric', 
+                                            hour: '2-digit', 
+                                            minute: '2-digit'
+                                        }) : 'Unknown'}
+                                    </div>
                                 </div>
                             </div>
                             
@@ -2510,15 +2637,18 @@ async function startScan() {
                                     <div class="price-label">CURRENT</div>
                                     <div class="price-value" data-current-price>$${formatPrice(currentPrice)}</div>
                                 </div>
-                                <div class="price-box tp">
-                                    <div class="price-label">TP</div>
-                                    <div class="price-value">$${formatPrice(pos.tpPrice)}</div>
-                                    <div class="price-percent">${tpPercent > 0 ? '+' : ''}${tpPercent.toFixed(1)}%</div>
-                                </div>
+                            </div>
+                            
+                            <div class="prices">
                                 <div class="price-box sl">
                                     <div class="price-label">SL</div>
                                     <div class="price-value">$${formatPrice(pos.slPrice)}</div>
                                     <div class="price-percent">${slPercent > 0 ? '+' : ''}${slPercent.toFixed(1)}%</div>
+                                </div>
+                                <div class="price-box tp">
+                                    <div class="price-label">TP</div>
+                                    <div class="price-value">$${formatPrice(pos.tpPrice)}</div>
+                                    <div class="price-percent">${tpPercent > 0 ? '+' : ''}${tpPercent.toFixed(1)}%</div>
                                 </div>
                             </div>
                             
@@ -2761,44 +2891,59 @@ async function startScan() {
         let priceWs = null;
         
         function startPriceUpdates() {
-            if (priceUpdateInterval) return;
             if (activePositions.length === 0) return;
-            
-            // Close existing WebSocket if any
-            if (priceWs) {
-                priceWs.close();
-            }
             
             // Subscribe to all active position symbols via WebSocket
             const symbols = activePositions.map(p => p.symbol);
+            
+            // Close existing WebSocket if switching symbols
+            if (priceWs) {
+                priceWs.close();
+                priceWs = null;
+            }
+            
+            // Create new WebSocket connection
             priceWs = subscribeToPriceUpdates(symbols);
             
-            // Also update UI every 2 seconds
+            // Clear existing interval
+            if (priceUpdateInterval) {
+                clearInterval(priceUpdateInterval);
+            }
+            
+            // Update UI every 1 second (faster updates)
             priceUpdateInterval = setInterval(async () => {
                 if (activePositions.length === 0) {
                     clearInterval(priceUpdateInterval);
                     priceUpdateInterval = null;
-                    if (priceWs) priceWs.close();
+                    if (priceWs) {
+                        priceWs.close();
+                        priceWs = null;
+                    }
                     return;
                 }
                 
+                // Update prices for all positions
                 for (const position of activePositions) {
-                    // Use cached price from WebSocket
-                    const currentPrice = position.currentPrice;
-                    if (!currentPrice) continue;
+                    // Try to get fresh price from cache or API
+                    const currentPrice = await getCurrentPrice(position.symbol);
+                    if (currentPrice) {
+                        position.currentPrice = currentPrice;
+                    }
                     
                     // Check TP/SL
-                    if (position.action === 'LONG') {
-                        if (currentPrice >= position.tpPrice) {
-                            await closePosition(position.id, 'tp');
-                        } else if (currentPrice <= position.slPrice) {
-                            await closePosition(position.id, 'sl');
-                        }
-                    } else {
-                        if (currentPrice <= position.tpPrice) {
-                            await closePosition(position.id, 'tp');
-                        } else if (currentPrice >= position.slPrice) {
-                            await closePosition(position.id, 'sl');
+                    if (position.currentPrice) {
+                        if (position.action === 'LONG') {
+                            if (position.currentPrice >= position.tpPrice) {
+                                await closePosition(position.id, 'tp');
+                            } else if (position.currentPrice <= position.slPrice) {
+                                await closePosition(position.id, 'sl');
+                            }
+                        } else {
+                            if (position.currentPrice <= position.tpPrice) {
+                                await closePosition(position.id, 'tp');
+                            } else if (position.currentPrice >= position.slPrice) {
+                                await closePosition(position.id, 'sl');
+                            }
                         }
                     }
                 }
@@ -2808,7 +2953,9 @@ async function startScan() {
                 if (currentTab === 'positions') {
                     displayPositions();
                 }
-            }, 2000); // Update UI every 2 seconds
+            }, 1000); // Update every 1 second (faster!)
+            
+            console.log('✅ Price updates started for', symbols.length, 'positions');
         }
         
         // ===================================================================
@@ -2826,6 +2973,11 @@ async function startScan() {
                 document.querySelectorAll('.tab')[0].classList.add('active');
                 document.getElementById('discoveriesTab').classList.add('active');
                 document.getElementById('filterBar').style.display = 'flex';
+                
+                // Clear app badge when viewing discoveries
+                if ('setAppBadge' in navigator) {
+                    navigator.setAppBadge(0).catch(() => {});
+                }
             } else if (tab === 'positions') {
                 document.querySelectorAll('.tab')[1].classList.add('active');
                 document.getElementById('positionsTab').classList.add('active');
@@ -2846,92 +2998,166 @@ async function startScan() {
         }
         
         function displayAssets() {
-            const allAssets = [...DEFAULT_ASSETS, ...customAssets];
-            document.getElementById('assetCount').textContent = allAssets.length;
-            document.getElementById('allCount').textContent = allAssets.length;
-            document.getElementById('defaultCount').textContent = DEFAULT_ASSETS.length;
-            document.getElementById('customCountTab').textContent = customAssets.length;
+            const maxFavorites = 50;
+            const remaining = maxFavorites - favoriteAssets.length;
             
-            let assetsToShow = [];
-            if (currentAssetFilter === 'all') {
-                assetsToShow = allAssets;
-            } else if (currentAssetFilter === 'default') {
-                assetsToShow = DEFAULT_ASSETS;
-            } else if (currentAssetFilter === 'custom') {
-                assetsToShow = customAssets;
-            }
+            document.getElementById('assetCount').textContent = `${favoriteAssets.length}/${maxFavorites}`;
+            document.getElementById('allCount').textContent = ALL_CRYPTO_ASSETS.length;
+            document.getElementById('defaultCount').textContent = favoriteAssets.length;
+            document.getElementById('customCountTab').textContent = remaining;
             
             const container = document.getElementById('assetsList');
             
-            if (assetsToShow.length === 0) {
-                container.innerHTML = '<div style="text-align: center; color: #999; padding: 40px;">No assets in this category</div>';
-                return;
-            }
-            
-            container.innerHTML = assetsToShow.map(symbol => {
-                const isCustom = customAssets.includes(symbol);
-                return `
-                    <div class="asset-list-item ${isCustom ? 'custom' : ''}">
-                        <div style="display: flex; align-items: center;">
-                            <span class="asset-name">${symbol}</span>
-                            ${isCustom ? '<span class="asset-badge custom">Custom</span>' : '<span class="asset-badge">Default</span>'}
+            let html = `
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 16px; margin-bottom: 20px; color: white;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div>
+                            <div style="font-size: 1.3em; font-weight: 700; margin-bottom: 5px;">
+                                ⭐ ${favoriteAssets.length} Favorites
+                            </div>
+                            <div style="font-size: 0.9em; opacity: 0.9;">
+                                ${remaining > 0 ? `Add ${remaining} more` : 'Maximum reached'}
+                            </div>
                         </div>
-                        ${isCustom ? `<button class="delete-asset" onclick="removeAsset('${symbol}')">Remove</button>` : ''}
+                        <div style="text-align: right;">
+                            <div style="font-size: 1.8em; font-weight: 700;">
+                                ${favoriteAssets.length <= 10 ? '⚡' : favoriteAssets.length <= 30 ? '🚀' : '📊'}
+                            </div>
+                            <div style="font-size: 0.8em; opacity: 0.9;">
+                                ${favoriteAssets.length <= 10 ? 'FAST' : favoriteAssets.length <= 30 ? 'Good' : 'Slower'}
+                            </div>
+                        </div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.2); padding: 12px; border-radius: 10px; font-size: 0.9em;">
+                        💡 Only favorites are scanned • ${ALL_CRYPTO_ASSETS.length} total assets available
+                    </div>
+                </div>
+            `;
+            
+            // Show current favorites
+            if (favoriteAssets.length > 0) {
+                html += `
+                    <div style="margin-bottom: 30px;">
+                        <div style="font-weight: 700; color: #334155; margin-bottom: 15px; font-size: 1.1em; display: flex; justify-content: space-between; align-items: center;">
+                            <span>⭐ Your Favorites</span>
+                            ${favoriteAssets.length > 2 ? `<button onclick="clearAllFavorites()" style="background: #fee2e2; color: #ef4444; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.85em; cursor: pointer; font-weight: 600;">Clear All</button>` : ''}
+                        </div>
+                        ${favoriteAssets.map(symbol => `
+                            <div class="asset-list-item" style="background: linear-gradient(135deg, #fef3c7, #fde68a); border-left: 4px solid #f59e0b;">
+                                <div style="display: flex; align-items: center;">
+                                    <span style="font-size: 1.2em; margin-right: 8px;">⭐</span>
+                                    <span class="asset-name">${symbol}</span>
+                                </div>
+                                <button class="delete-asset" onclick="removeFromFavorites('${symbol}')">Remove</button>
+                            </div>
+                        `).join('')}
                     </div>
                 `;
-            }).join('');
+            }
+            
+            // Show all available assets to add as favorites
+            const nonFavorites = ALL_CRYPTO_ASSETS.filter(a => !favoriteAssets.includes(a));
+            
+            html += `
+                <div style="margin-top: 30px;">
+                    <div style="background: #f8fafc; padding: 15px; border-radius: 12px; margin-bottom: 15px;">
+                        <div style="font-weight: 700; color: #334155; margin-bottom: 8px;">
+                            🔍 Search ${nonFavorites.length} Available Assets
+                        </div>
+                        <input 
+                            type="text" 
+                            id="assetSearchInput" 
+                            placeholder="Search crypto (e.g., SOL, AVAX, DOGE)..." 
+                            onkeyup="filterAvailableAssets()"
+                            style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1em;"
+                        />
+                    </div>
+                    
+                    <div id="availableAssetsList">
+                        ${renderAvailableAssets(nonFavorites, remaining)}
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = html;
         }
         
-        function filterAssets(filter) {
-            currentAssetFilter = filter;
-            displayAssets();
+        function renderAvailableAssets(assets, remaining) {
+            if (assets.length === 0) {
+                return '<div style="text-align: center; color: #999; padding: 40px;">No assets found</div>';
+            }
+            
+            return `
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px;">
+                    ${assets.map(symbol => `
+                        <button 
+                            class="asset-add-btn" 
+                            onclick="addToFavorites('${symbol}')" 
+                            ${remaining <= 0 ? 'disabled' : ''}
+                            title="Add ${symbol} to favorites"
+                        >
+                            ${symbol.replace('USDT', '')}
+                        </button>
+                    `).join('')}
+                </div>
+                <div style="text-align: center; margin-top: 15px; color: #64748b; font-size: 0.9em;">Showing ${assets.length} assets • Scroll to see all</div>
+            `;
         }
         
-        function addAssetFromTab() {
-            const input = document.getElementById('customAssetInput');
-            const symbol = input.value.trim().toUpperCase();
+        function filterAvailableAssets() {
+            const searchTerm = document.getElementById('assetSearchInput').value.toUpperCase();
+            const nonFavorites = ALL_CRYPTO_ASSETS.filter(a => !favoriteAssets.includes(a));
+            const remaining = 50 - favoriteAssets.length;
             
-            if (!symbol) {
-                alert('Please enter a symbol');
+            let filtered = nonFavorites;
+            if (searchTerm) {
+                filtered = nonFavorites.filter(a => a.includes(searchTerm));
+            }
+            
+            document.getElementById('availableAssetsList').innerHTML = renderAvailableAssets(filtered, remaining);
+        }
+        
+        function addToFavorites(symbol) {
+            if (favoriteAssets.length >= 50) {
+                alert('⚠️ Maximum 50 favorites reached!\n\nRemove some favorites before adding more.');
                 return;
             }
             
-            if (!symbol.endsWith('USDT')) {
-                alert('Symbol must end with USDT (e.g., BTCUSDT)');
+            if (favoriteAssets.includes(symbol)) {
+                alert('This asset is already in your favorites!');
                 return;
             }
             
-            if (DEFAULT_ASSETS.includes(symbol)) {
-                alert('This asset is already in the default list!');
-                return;
-            }
-            
-            if (customAssets.includes(symbol)) {
-                alert('This asset is already in your custom list!');
-                return;
-            }
-            
-            customAssets.push(symbol);
-            localStorage.setItem('kh_customAssets', JSON.stringify(customAssets));
-            
-            input.value = '';
-            displayAssets();
+            favoriteAssets.push(symbol);
+            localStorage.setItem('kh_favoriteAssets', JSON.stringify(favoriteAssets));
             
             if (settings.sound) playSound();
-            
-            alert(`✅ ${symbol} added successfully!`);
+            displayAssets();
         }
         
-        function removeAsset(symbol) {
-            if (!confirm(`Remove ${symbol} from custom assets?`)) return;
+        function removeFromFavorites(symbol) {
+            if (favoriteAssets.length <= 2) {
+                alert('⚠️ You must have at least 2 favorites!');
+                return;
+            }
             
-            customAssets = customAssets.filter(a => a !== symbol);
-            localStorage.setItem('kh_customAssets', JSON.stringify(customAssets));
+            if (!confirm(`Remove ${symbol} from favorites?`)) return;
+            
+            favoriteAssets = favoriteAssets.filter(a => a !== symbol);
+            localStorage.setItem('kh_favoriteAssets', JSON.stringify(favoriteAssets));
             
             displayAssets();
-            
-            alert(`✅ ${symbol} removed!`);
         }
+        
+        function clearAllFavorites() {
+            if (!confirm('Remove all favorites except BTC and ETH?')) return;
+            
+            favoriteAssets = [...DEFAULT_FAVORITES];
+            localStorage.setItem('kh_favoriteAssets', JSON.stringify(favoriteAssets));
+            
+            displayAssets();
+        }
+        
         
         function setFilter(filter) {
             currentFilter = filter;
@@ -3017,7 +3243,22 @@ async function startScan() {
             notification.onclick = () => {
                 window.focus();
                 notification.close();
+                // Clear badge when notification clicked
+                if ('setAppBadge' in navigator) {
+                    navigator.setAppBadge(0).catch(() => {});
+                }
             };
+            
+            // Set badge number to total unread signals
+            if ('setAppBadge' in navigator) {
+                const nowSignals = discoveries.filter(d => {
+                    if (!d || !d.action) return false;
+                    if (d.action === 'WAIT' || d.action === 'ERROR') return false;
+                    const timing = d.timing || d.aiTiming || '';
+                    return timing.includes('NOW');
+                });
+                navigator.setAppBadge(nowSignals.length).catch(() => {});
+            }
         }
         
         function playSound() {
