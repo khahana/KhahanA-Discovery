@@ -280,6 +280,33 @@
             padding: 10px;
             border-radius: 10px;
             text-align: center;
+            position: relative;
+        }
+        
+        .btn-edit-price {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(99, 102, 241, 0.8);
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-edit-price:hover {
+            background: rgba(99, 102, 241, 1);
+            transform: scale(1.1);
+        }
+        
+        .btn-edit-price:active {
+            transform: scale(0.95);
         }
         
         .price-box.tp {
@@ -1257,13 +1284,26 @@
         // Default favorites (BTC and ETH to start)
         const DEFAULT_FAVORITES = ['BTCUSDT', 'ETHUSDT'];
         
-        // User's favorite assets (max 50)
+        // User's favorite assets (max 50) - Make globally accessible
         let favoriteAssets = JSON.parse(localStorage.getItem('kh_favoriteAssets') || JSON.stringify(DEFAULT_FAVORITES));
+        window.favoriteAssets = favoriteAssets; // ← Make global!
+        
+        // User's custom added assets
+        let customAssets = JSON.parse(localStorage.getItem('kh_customAssets') || '[]');
+        window.customAssets = customAssets;
         
         // Ensure favorites is an array and has defaults
         if (!Array.isArray(favoriteAssets) || favoriteAssets.length === 0) {
             favoriteAssets = [...DEFAULT_FAVORITES];
+            window.favoriteAssets = favoriteAssets;
             localStorage.setItem('kh_favoriteAssets', JSON.stringify(favoriteAssets));
+        }
+        
+        // Ensure customAssets is an array
+        if (!Array.isArray(customAssets)) {
+            customAssets = [];
+            window.customAssets = customAssets;
+            localStorage.setItem('kh_customAssets', JSON.stringify(customAssets));
         }
         
         // ===================================================================
@@ -2668,7 +2708,7 @@ async function startScan() {
             }
         }
         
-        function displayPositions() {
+        function displayPositions(forceRebuild = false) {
             try {
                 console.log('🔄 Updating positions display...');
                 const container = document.getElementById('positionsTab');
@@ -2692,9 +2732,9 @@ async function startScan() {
                 
                 console.log(`📊 Displaying ${activePositions.length} positions`);
                 
-                // Check if we need to rebuild cards (position added/removed)
+                // Check if we need to rebuild cards (position added/removed OR forced)
                 const existingCards = container.querySelectorAll('.discovery-card');
-                const needsRebuild = existingCards.length !== activePositions.length;
+                const needsRebuild = forceRebuild || existingCards.length !== activePositions.length;
                 
                 if (needsRebuild) {
                     console.log('🔨 Full rebuild needed');
@@ -2714,15 +2754,17 @@ async function startScan() {
                     
                     const tpPercent = ((pos.tpPrice - pos.entryPrice) / pos.entryPrice * 100);
                     const slPercent = ((pos.slPrice - pos.entryPrice) / pos.slPrice * 100);
+                    const isExcellent = pos.timing && pos.timing.includes('EXCELLENT');
                     
                     return `
                         <div class="discovery-card active-position" data-position-id="${pos.id}">
                             <div class="status-badge">🔴 LIVE</div>
+                            ${isExcellent ? '<span class="excellent-badge" style="position: absolute; top: 15px; right: 15px;">⭐ EXCELLENT</span>' : ''}
                             
                             <div class="card-header">
                                 <div>
                                     <div class="symbol">${pos.action === 'LONG' ? '🚀' : '📉'} ${pos.symbol}</div>
-                                    <div class="timing">${pos.action} Position</div>
+                                    <div class="timing ${isExcellent ? 'excellent' : ''}">${pos.action} Position</div>
                                     <div style="font-size: 0.75em; color: #64748b; margin-top: 5px;">
                                         📅 Opened: ${pos.openedAt ? new Date(pos.openedAt).toLocaleString('en-US', { 
                                             month: 'short', 
@@ -2760,11 +2802,13 @@ async function startScan() {
                                     <div class="price-label">SL</div>
                                     <div class="price-value">$${formatPrice(pos.slPrice)}</div>
                                     <div class="price-percent">${slPercent > 0 ? '+' : ''}${slPercent.toFixed(1)}%</div>
+                                    <button class="btn-edit-price" onclick="editSL('${pos.id}', ${pos.slPrice})" title="Edit Stop Loss">✏️</button>
                                 </div>
                                 <div class="price-box tp">
                                     <div class="price-label">TP</div>
                                     <div class="price-value">$${formatPrice(pos.tpPrice)}</div>
                                     <div class="price-percent">${tpPercent > 0 ? '+' : ''}${tpPercent.toFixed(1)}%</div>
+                                    <button class="btn-edit-price" onclick="editTP('${pos.id}', ${pos.tpPrice})" title="Edit Take Profit">✏️</button>
                                 </div>
                             </div>
                             
@@ -2969,6 +3013,86 @@ async function startScan() {
             alert(`✅ Position opened for ${signal.symbol}!`);
         }
         
+        function editSL(positionId, currentSL) {
+            const position = activePositions.find(p => p.id === positionId);
+            if (!position) {
+                alert('❌ Position not found!');
+                return;
+            }
+            
+            const newSL = prompt(`Edit Stop Loss for ${position.symbol}\n\nCurrent SL: $${currentSL.toFixed(4)}\n\nEnter new Stop Loss price:`, currentSL.toFixed(4));
+            
+            if (newSL === null) return; // User cancelled
+            
+            const slPrice = parseFloat(newSL);
+            if (isNaN(slPrice) || slPrice <= 0) {
+                alert('❌ Invalid price! Please enter a valid number.');
+                return;
+            }
+            
+            // Validation: SL should be below entry for LONG, above entry for SHORT
+            if (position.action === 'LONG' && slPrice >= position.entryPrice) {
+                if (!confirm('⚠️ Warning: Stop Loss is above entry price for LONG position.\n\nThis means you will have a profit if SL hits.\n\nContinue?')) {
+                    return;
+                }
+            }
+            if (position.action === 'SHORT' && slPrice <= position.entryPrice) {
+                if (!confirm('⚠️ Warning: Stop Loss is below entry price for SHORT position.\n\nThis means you will have a profit if SL hits.\n\nContinue?')) {
+                    return;
+                }
+            }
+            
+            // Update the SL
+            position.slPrice = slPrice;
+            localStorage.setItem('kh_activePositions', JSON.stringify(activePositions));
+            
+            console.log(`✅ Updated SL for ${position.symbol}: $${slPrice}`);
+            displayPositions(true); // Force rebuild to show new SL
+            
+            if (settings.sound) playSound();
+            alert(`✅ Stop Loss updated to $${slPrice.toFixed(4)}`);
+        }
+        
+        function editTP(positionId, currentTP) {
+            const position = activePositions.find(p => p.id === positionId);
+            if (!position) {
+                alert('❌ Position not found!');
+                return;
+            }
+            
+            const newTP = prompt(`Edit Take Profit for ${position.symbol}\n\nCurrent TP: $${currentTP.toFixed(4)}\n\nEnter new Take Profit price:`, currentTP.toFixed(4));
+            
+            if (newTP === null) return; // User cancelled
+            
+            const tpPrice = parseFloat(newTP);
+            if (isNaN(tpPrice) || tpPrice <= 0) {
+                alert('❌ Invalid price! Please enter a valid number.');
+                return;
+            }
+            
+            // Validation: TP should be above entry for LONG, below entry for SHORT
+            if (position.action === 'LONG' && tpPrice <= position.entryPrice) {
+                if (!confirm('⚠️ Warning: Take Profit is below entry price for LONG position.\n\nThis means you will have a loss if TP hits.\n\nContinue?')) {
+                    return;
+                }
+            }
+            if (position.action === 'SHORT' && tpPrice >= position.entryPrice) {
+                if (!confirm('⚠️ Warning: Take Profit is above entry price for SHORT position.\n\nThis means you will have a loss if TP hits.\n\nContinue?')) {
+                    return;
+                }
+            }
+            
+            // Update the TP
+            position.tpPrice = tpPrice;
+            localStorage.setItem('kh_activePositions', JSON.stringify(activePositions));
+            
+            console.log(`✅ Updated TP for ${position.symbol}: $${tpPrice}`);
+            displayPositions(true); // Force rebuild to show new TP
+            
+            if (settings.sound) playSound();
+            alert(`✅ Take Profit updated to $${tpPrice.toFixed(4)}`);
+        }
+        
         async function closePosition(positionId, exitType) {
             const position = activePositions.find(p => p.id === positionId);
             if (!position) return;
@@ -3089,14 +3213,18 @@ async function startScan() {
                     if (position.currentPrice && !isProtected) {
                         if (position.action === 'LONG') {
                             if (position.currentPrice >= position.tpPrice) {
+                                console.log(`🎯 TP HIT for ${position.symbol}! Current: $${position.currentPrice}, TP: $${position.tpPrice}`);
                                 await closePosition(position.id, 'tp');
                             } else if (position.currentPrice <= position.slPrice) {
+                                console.log(`🛑 SL HIT for ${position.symbol}! Current: $${position.currentPrice}, SL: $${position.slPrice}`);
                                 await closePosition(position.id, 'sl');
                             }
                         } else {
                             if (position.currentPrice <= position.tpPrice) {
+                                console.log(`🎯 TP HIT for ${position.symbol}! Current: $${position.currentPrice}, TP: $${position.tpPrice}`);
                                 await closePosition(position.id, 'tp');
                             } else if (position.currentPrice >= position.slPrice) {
+                                console.log(`🛑 SL HIT for ${position.symbol}! Current: $${position.currentPrice}, SL: $${position.slPrice}`);
                                 await closePosition(position.id, 'sl');
                             }
                         }
@@ -3163,11 +3291,12 @@ async function startScan() {
         function displayAssets() {
             const maxFavorites = 50;
             const remaining = maxFavorites - favoriteAssets.length;
+            const totalAvailableCount = ALL_CRYPTO_ASSETS.length + customAssets.length;
             
             document.getElementById('assetCount').textContent = `${favoriteAssets.length}/${maxFavorites}`;
-            document.getElementById('allCount').textContent = ALL_CRYPTO_ASSETS.length;
-            document.getElementById('defaultCount').textContent = favoriteAssets.length;
-            document.getElementById('customCountTab').textContent = remaining;
+            document.getElementById('allCount').textContent = totalAvailableCount;
+            document.getElementById('defaultCount').textContent = ALL_CRYPTO_ASSETS.length;
+            document.getElementById('customCountTab').textContent = customAssets.length;
             
             const container = document.getElementById('assetsList');
             
@@ -3218,8 +3347,44 @@ async function startScan() {
                 `;
             }
             
-            // Show all available assets to add as favorites
-            const nonFavorites = ALL_CRYPTO_ASSETS.filter(a => !favoriteAssets.includes(a));
+            // Show custom assets if any
+            if (customAssets.length > 0) {
+                html += `
+                    <div style="margin-bottom: 30px;">
+                        <div style="font-weight: 700; color: #334155; margin-bottom: 15px; font-size: 1.1em;">
+                            🎨 Your Custom Assets (${customAssets.length})
+                        </div>
+                        ${customAssets.map(symbol => {
+                            const isFavorite = favoriteAssets.includes(symbol);
+                            return `
+                                <div class="asset-list-item" style="background: linear-gradient(135deg, #e0e7ff, #c7d2fe); border-left: 4px solid #6366f1;">
+                                    <div style="display: flex; align-items: center;">
+                                        <span style="font-size: 1.2em; margin-right: 8px;">🎨</span>
+                                        <span class="asset-name">${symbol}</span>
+                                        ${isFavorite ? '<span style="margin-left: 8px; font-size: 0.85em; color: #f59e0b;">⭐ Favorited</span>' : ''}
+                                    </div>
+                                    <div style="display: flex; gap: 8px;">
+                                        ${!isFavorite && remaining > 0 ? `
+                                            <button onclick="addToFavorites('${symbol}')" 
+                                                style="background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 0.9em; cursor: pointer; font-weight: 600;">
+                                                ⭐ Add to Favorites
+                                            </button>
+                                        ` : ''}
+                                        ${!isFavorite && remaining <= 0 ? `
+                                            <span style="color: #ef4444; font-size: 0.85em; padding: 8px;">Max favorites reached</span>
+                                        ` : ''}
+                                        <button class="delete-asset" onclick="removeCustomAsset('${symbol}')">🗑️ Delete</button>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            }
+            
+            // Show all available assets to add as favorites (default + custom)
+            const allAvailableAssets = [...ALL_CRYPTO_ASSETS, ...customAssets];
+            const nonFavorites = allAvailableAssets.filter(a => !favoriteAssets.includes(a));
             
             html += `
                 <div style="margin-top: 30px;">
@@ -3269,45 +3434,84 @@ async function startScan() {
         
         function filterAvailableAssets() {
             const searchTerm = document.getElementById('assetSearchInput').value.toUpperCase();
-            const nonFavorites = ALL_CRYPTO_ASSETS.filter(a => !favoriteAssets.includes(a));
+            // Include both default and custom assets
+            const allAssets = [...ALL_CRYPTO_ASSETS, ...customAssets];
+            const nonFavorites = allAssets.filter(a => !favoriteAssets.includes(a));
             const remaining = 50 - favoriteAssets.length;
             
             let filtered = nonFavorites;
             if (searchTerm) {
                 filtered = nonFavorites.filter(a => a.includes(searchTerm));
+                
+                // Check if search term matches a favorite
+                if (filtered.length === 0) {
+                    const matchesInFavorites = favoriteAssets.filter(a => a.includes(searchTerm));
+                    if (matchesInFavorites.length > 0) {
+                        // Show message that asset is already favorited
+                        document.getElementById('availableAssetsList').innerHTML = `
+                            <div style="text-align: center; padding: 40px; color: #059669;">
+                                <div style="font-size: 3em; margin-bottom: 15px;">✅</div>
+                                <div style="font-size: 1.2em; font-weight: 600; margin-bottom: 10px;">
+                                    ${matchesInFavorites.join(', ')}
+                                </div>
+                                <div style="color: #64748b;">
+                                    Already in your favorites! ⭐
+                                </div>
+                            </div>
+                        `;
+                        return;
+                    }
+                }
             }
             
             document.getElementById('availableAssetsList').innerHTML = renderAvailableAssets(filtered, remaining);
         }
         
         function addToFavorites(symbol) {
-            if (favoriteAssets.length >= 50) {
+            console.log('➕ Adding to favorites:', symbol);
+            console.log('Current favorites:', window.favoriteAssets || favoriteAssets);
+            
+            // Use window reference to ensure we have the right variable
+            const favorites = window.favoriteAssets || favoriteAssets;
+            
+            if (favorites.length >= 50) {
                 alert('⚠️ Maximum 50 favorites reached!\n\nRemove some favorites before adding more.');
                 return;
             }
             
-            if (favoriteAssets.includes(symbol)) {
-                alert('This asset is already in your favorites!');
+            if (favorites.includes(symbol)) {
+                alert('⚠️ This asset is already in your favorites!');
                 return;
             }
             
-            favoriteAssets.push(symbol);
-            localStorage.setItem('kh_favoriteAssets', JSON.stringify(favoriteAssets));
+            favorites.push(symbol);
+            favoriteAssets = favorites;
+            window.favoriteAssets = favorites;
+            localStorage.setItem('kh_favoriteAssets', JSON.stringify(favorites));
+            
+            console.log('✅ Added! New favorites:', favorites);
             
             if (settings.sound) playSound();
             displayAssets();
+            
+            // Show success feedback
+            alert(`✅ ${symbol} added to favorites!`);
         }
         
         function removeFromFavorites(symbol) {
-            if (favoriteAssets.length <= 2) {
+            const favorites = window.favoriteAssets || favoriteAssets;
+            
+            if (favorites.length <= 2) {
                 alert('⚠️ You must have at least 2 favorites!');
                 return;
             }
             
             if (!confirm(`Remove ${symbol} from favorites?`)) return;
             
-            favoriteAssets = favoriteAssets.filter(a => a !== symbol);
-            localStorage.setItem('kh_favoriteAssets', JSON.stringify(favoriteAssets));
+            const updated = favorites.filter(a => a !== symbol);
+            favoriteAssets = updated;
+            window.favoriteAssets = updated;
+            localStorage.setItem('kh_favoriteAssets', JSON.stringify(updated));
             
             displayAssets();
         }
@@ -3316,7 +3520,64 @@ async function startScan() {
             if (!confirm('Remove all favorites except BTC and ETH?')) return;
             
             favoriteAssets = [...DEFAULT_FAVORITES];
+            window.favoriteAssets = favoriteAssets;
             localStorage.setItem('kh_favoriteAssets', JSON.stringify(favoriteAssets));
+            
+            displayAssets();
+        }
+        
+        function addAssetFromTab() {
+            const input = document.getElementById('customAssetInput');
+            const symbol = input.value.trim().toUpperCase();
+            
+            if (!symbol) {
+                alert('⚠️ Please enter an asset symbol!');
+                return;
+            }
+            
+            // Must end with USDT
+            if (!symbol.endsWith('USDT')) {
+                alert('⚠️ Asset must end with USDT!\n\nExample: BTCUSDT');
+                return;
+            }
+            
+            // Check if already exists in ALL assets (default + custom)
+            const allAssets = [...ALL_CRYPTO_ASSETS, ...customAssets];
+            if (allAssets.includes(symbol)) {
+                alert(`⚠️ ${symbol} already exists in the assets list!`);
+                return;
+            }
+            
+            // Add to custom assets
+            customAssets.push(symbol);
+            window.customAssets = customAssets;
+            localStorage.setItem('kh_customAssets', JSON.stringify(customAssets));
+            
+            console.log('✅ Added custom asset:', symbol);
+            
+            // Clear input
+            input.value = '';
+            
+            // Show success and refresh display
+            if (settings.sound) playSound();
+            alert(`✅ ${symbol} added to available assets!\n\nYou can now add it to favorites.`);
+            
+            displayAssets();
+        }
+        
+        function removeCustomAsset(symbol) {
+            if (!confirm(`Remove ${symbol} from custom assets?`)) return;
+            
+            customAssets = customAssets.filter(a => a !== symbol);
+            window.customAssets = customAssets;
+            localStorage.setItem('kh_customAssets', JSON.stringify(customAssets));
+            
+            // Also remove from favorites if it's there
+            if (favoriteAssets.includes(symbol)) {
+                favoriteAssets = favoriteAssets.filter(a => a !== symbol);
+                window.favoriteAssets = favoriteAssets;
+                localStorage.setItem('kh_favoriteAssets', JSON.stringify(favoriteAssets));
+            }
             
             displayAssets();
         }
