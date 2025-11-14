@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -32,6 +30,53 @@
             padding: 0;
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
+
+            
+            /* Fix tab text wrapping */
+            .tab-text {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+    
+            
+            /* Stack Best/Worst trades on mobile */
+            .best-worst-grid {
+                display: grid;
+                gap: 10px;
+            }
+            
+            @media (max-width: 768px) {
+                .best-worst-grid {
+                    grid-template-columns: 1fr !important;
+                }
+            }
+        }
+            
+            /* Ensure Analytics content fits */
+            #analyticsContent {
+                max-width: 100%;
+                overflow-x: hidden;
+                padding: 10px;
+            }
+            
+            /* Make cards stack on very small screens */
+            @media (max-width: 400px) {
+                .analytics-card {
+                    min-width: 120px;
+                }
+                
+                .heatmap-cell {
+                    min-width: 28px;
+                    height: 28px;
+                    font-size: 0.6em;
+                }
+                
+                .tab {
+                    min-width: 50px;
+                    padding: 5px 6px;
+                    font-size: 0.65em;
+                }
+            }
         }
 
         /* CSS Variables for Light and Dark Modes */
@@ -1635,9 +1680,7 @@
         }
         
         /* Heatmap */
-        .heatmap-container {
-            display: grid;
-            grid-template-columns: repeat(12, 1fr);
+12, 1fr);
             gap: 8px;
             margin-bottom: 15px;
         }
@@ -1977,6 +2020,65 @@
         
         body.dark-mode .ml-insights {
             background: rgba(102, 126, 234, 0.15) !important;
+        }
+    
+        
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            .tab {
+                min-width: 55px;
+                padding: 6px 8px;
+                font-size: 0.7em;
+            }
+            
+            .tab-icon {
+                font-size: 0.9em;
+                margin-bottom: 1px;
+            }
+            
+            .analytics-card {
+                min-width: 140px;
+            }
+            
+            .analytics-card-value {
+                font-size: 1.5em;
+            }
+            
+            .analytics-card-label {
+                font-size: 0.7em;
+            }
+            
+            .trade-highlight {
+                padding: 12px;
+            }
+            
+            .trade-highlight-value {
+                font-size: 1.3em;
+            }
+            
+            .heatmap-cell {
+                min-width: 35px;
+                height: 35px;
+                font-size: 0.7em;
+            }
+            
+            .analytics-section {
+                padding: 15px;
+            }
+            
+            .analytics-section-title {
+                font-size: 0.95em;
+            }
+            
+            /* Ensure content doesn't overflow */
+            .tab-content {
+                overflow-x: hidden;
+                max-width: 100vw;
+            }
+            
+            body {
+                overflow-x: hidden;
+            }
         }
     </style>
 </head>
@@ -5702,7 +5804,7 @@ async function startScan() {
                 
                 <div class="analytics-section" style="margin-bottom: 25px;">
                     <h3 class="analytics-section-title">🏆 Best & Worst Trades</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="best-worst-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                         <div class="trade-highlight best-trade">
                             <div class="trade-highlight-header">🥇 Best Trade</div>
                             <div class="trade-highlight-symbol">${bestTrade.symbol}</div>
@@ -5895,7 +5997,7 @@ async function startScan() {
                 
                 <div style="background: var(--card-bg); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
                     <h3 style="color: var(--text-primary); margin-bottom: 15px; font-size: 1.2em;">🏆 Best & Worst Trades</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="best-worst-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                         <div style="background: rgba(16, 185, 129, 0.1); padding: 12px; border-radius: 8px; border-left: 4px solid #10b981;">
                             <div style="color: var(--text-secondary); font-size: 0.85em; margin-bottom: 5px;">Best Trade</div>
                             <div style="color: var(--text-primary); font-weight: 700; font-size: 1.1em;">${bestTrade.symbol}</div>
@@ -5952,3 +6054,6 @@ async function startScan() {
     </script>
 </body>
 </html>
+
+
+
